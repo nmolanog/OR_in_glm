@@ -1,0 +1,48 @@
+---
+title: "Obtaining odds ratios from logistic regression"
+author: "Nicolás Molano Gonzalez"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  bookdown::html_document2: default
+bibliography: references.bib  
+---
+
+```{r echo=F, message = FALSE, warning =F}
+library(pacman)
+library(pacman)
+p_load(here)
+p_load(tidyverse)
+p_load(reshape2)
+p_load(boot)
+p_load(epitools)
+p_load(kableExtra)
+p_load(knitr)
+set.seed(150)
+```
+
+# Introduction
+Odds ratios are the prefered effect measure in health sciences to describe asociations between an dichotumous outcome of interest and a categorical variable, most often dichotumous, but not always. Lets start this discution with an example, in order to define the odds ratios (OR) and discuss some properties of this statistic.
+
+## Example1
+```{r echo=FALSE, results = 'asis',message = FALSE, warning =F}
+ca_ctr_r<-.3
+n<-250
+nCA<-round(n*ca_ctr_r)
+z0<-data.frame(status=c(rep("flu",nCA),rep("no_flu",n-nCA)))
+z0$vac<-NA
+exp_CA<-.35
+exp_CTR<-.68
+z0[z0$status %in% "flu","vac"]<-ifelse(runif(nCA)<exp_CA,"yes","no")
+z0[z0$status %in% "no_flu","vac"]<-ifelse(runif(n-nCA)<exp_CA,"yes","no")
+z0$vac<-factor(z0$vac,levels = c("yes","no"))
+```
+
+Considere an study in which `r n` patients are interrogated about having taken any vaccinations against seasonal flu (vac) and diagnostiqued in the past six monts with seasonal flu (flu). The data of the study can be summarized in the following contingency table (\@ref(tab:conttabl))
+
+```{r conttabl, echo=FALSE}
+###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
+res<-kable(t(table(z0)%>%addmargins),caption="contingency table of flu vs vac")
+kable_styling(res,"striped", position = "center",full_width = F)%>% add_header_above(c("vac","status"=2," "))
+# res<-t(table(z0)%>%addmargins)
+# knitr::kable(res,caption="Tabla de contingencia: status vs exposition")
+```

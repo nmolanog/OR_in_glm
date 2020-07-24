@@ -1,0 +1,1 @@
+This project is to illustrate the things to be considered in order to calculate odds ratios from a logistic regression fitted with glm in R
