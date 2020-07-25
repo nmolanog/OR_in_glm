@@ -21,7 +21,7 @@ set.seed(150)
 ```
 
 # Introduction
-Odds ratios are the prefered effect measure in health sciences to describe asociations between an dichotumous outcome of interest and a categorical variable, most often dichotumous, but not always. Lets start this discution with an example, in order to define the odds ratios (OR) and discuss some properties of this statistic.
+Odds ratios are the prefered effect measure in health sciences to describe asociations between an dichotumous outcome of interest and a categorical variable, most often dichotumous, but not always. Lets start this discution with an example.
 
 ## Example1
 ```{r echo=FALSE, results = 'asis',message = FALSE, warning =F}
@@ -31,9 +31,9 @@ nCA<-round(n*ca_ctr_r)
 z0<-data.frame(status=c(rep("flu",nCA),rep("no_flu",n-nCA)))
 z0$vac<-NA
 exp_CA<-.35
-exp_CTR<-.68
+exp_CTR<-.75
 z0[z0$status %in% "flu","vac"]<-ifelse(runif(nCA)<exp_CA,"yes","no")
-z0[z0$status %in% "no_flu","vac"]<-ifelse(runif(n-nCA)<exp_CA,"yes","no")
+z0[z0$status %in% "no_flu","vac"]<-ifelse(runif(n-nCA)<exp_CTR,"yes","no")
 z0$vac<-factor(z0$vac,levels = c("yes","no"))
 ```
 
@@ -43,6 +43,79 @@ Considere an study in which `r n` patients are interrogated about having taken a
 ###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
 res<-kable(t(table(z0)%>%addmargins),caption="contingency table of flu vs vac")
 kable_styling(res,"striped", position = "center",full_width = F)%>% add_header_above(c("vac","status"=2," "))
-# res<-t(table(z0)%>%addmargins)
+# res<-t(table(z0)%>%addmargins)  
 # knitr::kable(res,caption="Tabla de contingencia: status vs exposition")
 ```
+The main interest in this study is to determine if the proportion of patients diagnostiqued with flu is diferent depending on the intake of the vaccine. A first approach to this, is to compute conditional proportions of infections for those that were exposed to the vaccine and for those who not. This is easly done by calculating the row proportions in the table \@ref(tab:conttabl), as shown below
+
+```{r proptable, echo=FALSE}
+###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
+resprop<-kable(t(table(z0))%>%prop.table(1),caption="row proportions of flu vs vac")
+kable_styling(resprop,"striped", position = "center",full_width = F)%>% add_header_above(c("vac","status"=2))
+# res<-t(table(z0)%>%addmargins)
+# knitr::kable(res,caption="Tabla de contingencia: status vs exposition")
+
+or1<-t(table(z0))%>%oddsratio
+```
+As can be seen in table \@ref(tab:proptable), proportion of infections is higher in the group of no vaccination. Lets calculate de OR for this table, defined as: 
+
+\begin{equation}
+OR_{p_{vac}|p_{no \; vac}}=\frac{\frac{p_{vac}}{1-p_{vac}}}{\frac{p_{no \;vac}}{1-p_{no \;vac}}} (\#eq:or1)
+\end{equation}
+
+Where $p_{vac}$ stands for the proportion of patients with flu which were previously vaccinted, or more exactly, in terms of conditional probabilities:$p_{vac}=P(flu|vac)$. Similarly $p_{no \;vac}$ stands for the proportion of patients with flu which did not recive any vaccination or $P(flu|no \;vac)$. Therefore
+$OR_{p_{vac}|p_{no \; vac}}=$ `r or1$measure[2,1]`, and the $95\% \; CI=$ `r or1$measure[2,2:3]`
+
+It is very important to note that the different OR's can be computed from this same table. If we transpose the table we get this
+
+```{r trasconttabl, echo=FALSE}
+###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
+res<-kable(table(z0)%>%addmargins,caption="contingency table of vac vs flu")
+kable_styling(res,"striped", position = "center",full_width = F)%>% add_header_above(c("flu","vac"=2," "))
+# res<-t(table(z0)%>%addmargins)  
+# knitr::kable(res,caption="Tabla de contingencia: status vs exposition")
+or2<-table(z0)%>%oddsratio
+```
+Calculating the OR from this table we obtain the following:
+
+\begin{equation}
+OR_{p_{flu}|p_{no \; flu}}=\frac{\frac{p_{flu}}{1-p_{flu}}}{\frac{p_{no \;flu}}{1-p_{no \;flu}}} (\#eq:or2)
+\end{equation}
+
+Now, $p_{flu}$ stands for the proportion of patients with flu that were vaccinated, that is $P(vac|flue)$ and $p_{no \;flu}$ stands for the proportion of patients without flu which did not recive any vaccination (i.e $P(vac|no \; flu)$). Therefore
+$OR_{p_{flu}|p_{no \; flu}}=$ `r or2$measure[2,1]`, and the $95\% \; CI=$ `r or2$measure[2,2:3]`
+
+As can be seen 
+$$OR_{p_{vac}|p_{no \; vac}}=OR_{p_{flu}|p_{no \; flu}}$$
+although they are the same, the conditional probabilities analised are very diferent
+
+```{r proptable2, echo=FALSE}
+###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
+resprop2<-kable(table(z0)%>%prop.table(1),caption="row proportions of vac vs flu")
+kable_styling(resprop,"striped", position = "float_left",full_width =F)%>% add_header_above(c("vac","status"=2))
+kable_styling(resprop2,"striped", position = "left",full_width = F)%>% add_header_above(c("flu","vac"=2))
+```
+
+Still, there exist another posible OR calculation for the same data set. Consider swaping the columns in table \@ref(tab:conttabl), obtaining this:
+
+```{r conttablinv, echo=FALSE}
+###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
+z0$status<-factor(z0$status,levels = c("no_flu","flu"))
+res<-kable(t(table(z0)%>%addmargins),caption="contingency table of flu vs vac")
+kable_styling(res,"striped", position = "center",full_width = F)%>% add_header_above(c("vac","status"=2," "))
+
+or3<-t(table(z0))%>%oddsratio
+```
+
+calculating the OR for this table now looks like this:
+\begin{equation}
+OR_{q_{vac}|q_{no \; vac}}=\frac{\frac{q_{vac}}{1-q_{vac}}}{\frac{q_{no \;vac}}{1-q_{no \;vac}}} (\#eq:or3)
+\end{equation}
+
+where $q_{vac}=P(no \; flu|vac)=1-P(flu|vac)$ and $q_{no \;vac}=P(no \; flu|no \;vac)=1-p_{no \;vac}$. Therefore
+$OR_{q_{vac}|q_{no \; vac}}=$ `r or3$measure[2,1]`, and the $95\% \; CI=$ `r or3$measure[2,2:3]`
+
+You can verify that indeed 
+
+$$OR_{p_{vac}|p_{no \; vac}}=1/OR_{q_{vac}|q_{no \; vac}}$$
+In conclucion, for a $2 \times 2$ table two different OR's can be computed and they are related since one is the multiplicative inverse of the other. However there exist more than two posible configurations for the contingency table associated with this two OR and the configuration of the table is very important since it is related with the conditional probabilities analysed.

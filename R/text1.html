@@ -380,7 +380,7 @@ summary {
 
 <div id="introduction" class="section level1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
-<p>Odds ratios are the prefered effect measure in health sciences to describe asociations between an dichotumous outcome of interest and a categorical variable, most often dichotumous, but not always. Lets start this discution with an example, in order to define the odds ratios (OR) and discuss some properties of this statistic.</p>
+<p>Odds ratios are the prefered effect measure in health sciences to describe asociations between an dichotumous outcome of interest and a categorical variable, most often dichotumous, but not always. Lets start this discution with an example.</p>
 <div id="example1" class="section level2">
 <h2><span class="header-section-number">1.1</span> Example1</h2>
 <p>Considere an study in which 250 patients are interrogated about having taken any vaccinations against seasonal flu (vac) and diagnostiqued in the past six monts with seasonal flu (flu). The data of the study can be summarized in the following contingency table (<a href="#tab:conttabl">1.1</a>)</p>
@@ -426,10 +426,10 @@ yes
 20
 </td>
 <td style="text-align:right;">
-63
+129
 </td>
 <td style="text-align:right;">
-83
+149
 </td>
 </tr>
 <tr>
@@ -440,10 +440,10 @@ no
 55
 </td>
 <td style="text-align:right;">
-112
+46
 </td>
 <td style="text-align:right;">
-167
+101
 </td>
 </tr>
 <tr>
@@ -462,6 +462,348 @@ Sum
 </tr>
 </tbody>
 </table>
+<p>The main interest in this study is to determine if the proportion of patients diagnostiqued with flu is diferent depending on the intake of the vaccine. A first approach to this, is to compute conditional proportions of infections for those that were exposed to the vaccine and for those who not. This is easly done by calculating the row proportions in the table <a href="#tab:conttabl">1.1</a>, as shown below</p>
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:proptable">Table 1.2: </span>row proportions of flu vs vac
+</caption>
+<thead>
+<tr>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+vac
+</div>
+</th>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+status
+</div>
+</th>
+</tr>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+flu
+</th>
+<th style="text-align:right;">
+no_flu
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+yes
+</td>
+<td style="text-align:right;">
+0.1342282
+</td>
+<td style="text-align:right;">
+0.8657718
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+0.5445545
+</td>
+<td style="text-align:right;">
+0.4554455
+</td>
+</tr>
+</tbody>
+</table>
+<p>As can be seen in table <a href="#tab:proptable">1.2</a>, proportion of infections is higher in the group of no vaccination. Lets calculate de OR for this table, defined as:</p>
+<p><span class="math display" id="eq:or1">\[\begin{equation}
+OR_{p_{vac}|p_{no \; vac}}=\frac{\frac{p_{vac}}{1-p_{vac}}}{\frac{p_{no \;vac}}{1-p_{no \;vac}}} \tag{1.1}
+\end{equation}\]</span></p>
+<p>Where <span class="math inline">\(p_{vac}\)</span> stands for the proportion of patients with flu which were previously vaccinted, or more exactly, in terms of conditional probabilities:<span class="math inline">\(p_{vac}=P(flu|vac)\)</span>. Similarly <span class="math inline">\(p_{no \;vac}\)</span> stands for the proportion of patients with flu which did not recive any vaccination or <span class="math inline">\(P(flu|no \;vac)\)</span>. Therefore
+<span class="math inline">\(OR_{p_{vac}|p_{no \; vac}}=\)</span> 0.131502, and the <span class="math inline">\(95\% \; CI=\)</span> 0.0697264, 0.239498</p>
+<p>It is very important to note that the different OR’s can be computed from this same table. If we transpose the table we get this</p>
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:trasconttabl">Table 1.3: </span>contingency table of vac vs flu
+</caption>
+<thead>
+<tr>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+flu
+</div>
+</th>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+vac
+</div>
+</th>
+<th style="border-bottom:hidden" colspan="1">
+</th>
+</tr>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+yes
+</th>
+<th style="text-align:right;">
+no
+</th>
+<th style="text-align:right;">
+Sum
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+flu
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+55
+</td>
+<td style="text-align:right;">
+75
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+no_flu
+</td>
+<td style="text-align:right;">
+129
+</td>
+<td style="text-align:right;">
+46
+</td>
+<td style="text-align:right;">
+175
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sum
+</td>
+<td style="text-align:right;">
+149
+</td>
+<td style="text-align:right;">
+101
+</td>
+<td style="text-align:right;">
+250
+</td>
+</tr>
+</tbody>
+</table>
+<p>Calculating the OR from this table we obtain the following:</p>
+<p><span class="math display" id="eq:or2">\[\begin{equation}
+OR_{p_{flu}|p_{no \; flu}}=\frac{\frac{p_{flu}}{1-p_{flu}}}{\frac{p_{no \;flu}}{1-p_{no \;flu}}} \tag{1.2}
+\end{equation}\]</span></p>
+<p>Now, <span class="math inline">\(p_{flu}\)</span> stands for the proportion of patients with flu that were vaccinated, that is <span class="math inline">\(P(vac|flue)\)</span> and <span class="math inline">\(p_{no \;flu}\)</span> stands for the proportion of patients without flu which did not recive any vaccination (i.e <span class="math inline">\(P(vac|no \; flu)\)</span>). Therefore
+<span class="math inline">\(OR_{p_{flu}|p_{no \; flu}}=\)</span> 0.131502, and the <span class="math inline">\(95\% \; CI=\)</span> 0.0697264, 0.239498</p>
+<p>As can be seen
+<span class="math display">\[OR_{p_{vac}|p_{no \; vac}}=OR_{p_{flu}|p_{no \; flu}}\]</span>
+although they are the same, the conditional probabilities analised are very diferent</p>
+<table class="table table-striped" style="width: auto !important; float: left; margin-right: 10px;">
+<caption>
+<span id="tab:proptable">Table 1.2: </span>row proportions of flu vs vac
+</caption>
+<thead>
+<tr>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+vac
+</div>
+</th>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+status
+</div>
+</th>
+</tr>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+flu
+</th>
+<th style="text-align:right;">
+no_flu
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+yes
+</td>
+<td style="text-align:right;">
+0.1342282
+</td>
+<td style="text-align:right;">
+0.8657718
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+0.5445545
+</td>
+<td style="text-align:right;">
+0.4554455
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table table-striped" style="width: auto !important; ">
+<caption>
+<span id="tab:proptable2">Table 1.4: </span>row proportions of vac vs flu
+</caption>
+<thead>
+<tr>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+flu
+</div>
+</th>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+vac
+</div>
+</th>
+</tr>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+yes
+</th>
+<th style="text-align:right;">
+no
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+flu
+</td>
+<td style="text-align:right;">
+0.2666667
+</td>
+<td style="text-align:right;">
+0.7333333
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+no_flu
+</td>
+<td style="text-align:right;">
+0.7371429
+</td>
+<td style="text-align:right;">
+0.2628571
+</td>
+</tr>
+</tbody>
+</table>
+<p>Still, there exist another posible OR calculation for the same data set. Consider swaping the columns in table <a href="#tab:conttabl">1.1</a>, obtaining this:</p>
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:conttablinv">Table 1.5: </span>contingency table of flu vs vac
+</caption>
+<thead>
+<tr>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+vac
+</div>
+</th>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+status
+</div>
+</th>
+<th style="border-bottom:hidden" colspan="1">
+</th>
+</tr>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+no_flu
+</th>
+<th style="text-align:right;">
+flu
+</th>
+<th style="text-align:right;">
+Sum
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+yes
+</td>
+<td style="text-align:right;">
+129
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+149
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+46
+</td>
+<td style="text-align:right;">
+55
+</td>
+<td style="text-align:right;">
+101
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sum
+</td>
+<td style="text-align:right;">
+175
+</td>
+<td style="text-align:right;">
+75
+</td>
+<td style="text-align:right;">
+250
+</td>
+</tr>
+</tbody>
+</table>
+<p>calculating the OR for this table now looks like this:
+<span class="math display" id="eq:or3">\[\begin{equation}
+OR_{q_{vac}|q_{no \; vac}}=\frac{\frac{q_{vac}}{1-q_{vac}}}{\frac{q_{no \;vac}}{1-q_{no \;vac}}} \tag{1.3}
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(q_{vac}=P(no \; flu|vac)=1-P(flu|vac)\)</span> and <span class="math inline">\(q_{no \;vac}=P(no \; flu|no \;vac)=1-p_{no \;vac}\)</span>. Therefore
+<span class="math inline">\(OR_{q_{vac}|q_{no \; vac}}=\)</span> 7.6049208, and the <span class="math inline">\(95\% \; CI=\)</span> 4.1754008, 14.3417745</p>
+<p>You can verify that indeed</p>
+<p><span class="math display">\[OR_{p_{vac}|p_{no \; vac}}=1/OR_{q_{vac}|q_{no \; vac}}\]</span>
+In conclucion, for a <span class="math inline">\(2 \times 2\)</span> table two different OR’s can be computed and they are related since one is the multiplicative inverse of the other. However there exist more than two posible configurations for the contingency table associated with this two OR and the configuration of the table is very important since it is related with the conditional probabilities analysed.</p>
 </div>
 </div>
 
