@@ -373,7 +373,7 @@ summary {
 
 <h1 class="title toc-ignore">Obtaining odds ratios from logistic regression</h1>
 <h4 class="author">Nicolás Molano Gonzalez</h4>
-<h4 class="date">24 julio, 2020</h4>
+<h4 class="date">25 julio, 2020</h4>
 
 </div>
 
@@ -805,6 +805,347 @@ OR_{q_{vac}|q_{no \; vac}}=\frac{\frac{q_{vac}}{1-q_{vac}}}{\frac{q_{no \;vac}}{
 <p><span class="math display">\[OR_{p_{vac}|p_{no \; vac}}=1/OR_{q_{vac}|q_{no \; vac}}\]</span>
 In conclucion, for a <span class="math inline">\(2 \times 2\)</span> table two different OR’s can be computed and they are related since one is the multiplicative inverse of the other. However there exist more than two posible configurations for the contingency table associated with this two OR and the configuration of the table is very important since it is related with the conditional probabilities analysed.</p>
 </div>
+</div>
+<div id="odds-ratios-for-k-times-2-tables" class="section level1">
+<h1><span class="header-section-number">2</span> Odds ratios for <span class="math inline">\(K \times 2\)</span> tables</h1>
+<p>OR’s can be used to characterize the associatiosn of between an dichotumous outcome of interest and a categorical variable with nore than two categories. Consider the next example.</p>
+<div id="example-2" class="section level2">
+<h2><span class="header-section-number">2.1</span> Example 2</h2>
+<p>A researcher has 1000 mice which were asigned randomly to one of 3 treatments: A, B, C. The researchers were interested in how the treatment is related to behavior modifications (<span class="math inline">\(BM=Yes\)</span>) or not (<span class="math inline">\(BM=No\)</span>). Table <a href="#tab:ex2t1">2.1</a> presents the rewsults of this experiment.</p>
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex2t1">Table 2.1: </span>contingency table of treatment vs behavior modifications
+</caption>
+<thead>
+<tr>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+treatment
+</div>
+</th>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+BM
+</div>
+</th>
+<th style="border-bottom:hidden" colspan="1">
+</th>
+</tr>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Yes
+</th>
+<th style="text-align:right;">
+No
+</th>
+<th style="text-align:right;">
+Sum
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:right;">
+49
+</td>
+<td style="text-align:right;">
+267
+</td>
+<td style="text-align:right;">
+316
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:right;">
+230
+</td>
+<td style="text-align:right;">
+118
+</td>
+<td style="text-align:right;">
+348
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:right;">
+286
+</td>
+<td style="text-align:right;">
+50
+</td>
+<td style="text-align:right;">
+336
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sum
+</td>
+<td style="text-align:right;">
+565
+</td>
+<td style="text-align:right;">
+435
+</td>
+<td style="text-align:right;">
+1000
+</td>
+</tr>
+</tbody>
+</table>
+<p>It must be noted that the objective of this experiment is to study the following conditional probabilities:
+<span class="math display">\[P(BM=Yes|Treatment=A), \;(BM=Yes|Treatment=B), \;(BM=Yes|Treatment=C)\]</span>
+And to assess wether they differ at all, which is biger, etc. How OR’s can help us to characterise the change in conditional distributions of behavior modifications given the treatments asigned? OR’s are designed to measure the association between dichotumous variables, however, here one of the variables has 3 categories. The key is to note that in table <a href="#tab:ex2t1">2.1</a> there exist several <span class="math inline">\(2 \times 2\)</span> tables for example</p>
+<table class="table table-striped" style="width: auto !important; float: left; margin-right: 10px;">
+<caption>
+<span id="tab:nested2by2">Table 2.2: </span>a) rows A and B
+</caption>
+<thead>
+<tr>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+treatment
+</div>
+</th>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+BM
+</div>
+</th>
+<th style="border-bottom:hidden" colspan="1">
+</th>
+</tr>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Yes
+</th>
+<th style="text-align:right;">
+No
+</th>
+<th style="text-align:right;">
+Sum
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:right;">
+49
+</td>
+<td style="text-align:right;">
+267
+</td>
+<td style="text-align:right;">
+316
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:right;">
+230
+</td>
+<td style="text-align:right;">
+118
+</td>
+<td style="text-align:right;">
+348
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sum
+</td>
+<td style="text-align:right;">
+279
+</td>
+<td style="text-align:right;">
+385
+</td>
+<td style="text-align:right;">
+664
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table table-striped" style="width: auto !important; ">
+<caption>
+<span id="tab:nested2by2">Table 2.2: </span>b) rows A and C
+</caption>
+<thead>
+<tr>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+treatment
+</div>
+</th>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+BM
+</div>
+</th>
+<th style="border-bottom:hidden" colspan="1">
+</th>
+</tr>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Yes
+</th>
+<th style="text-align:right;">
+No
+</th>
+<th style="text-align:right;">
+Sum
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:right;">
+49
+</td>
+<td style="text-align:right;">
+267
+</td>
+<td style="text-align:right;">
+316
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:right;">
+286
+</td>
+<td style="text-align:right;">
+50
+</td>
+<td style="text-align:right;">
+336
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sum
+</td>
+<td style="text-align:right;">
+335
+</td>
+<td style="text-align:right;">
+317
+</td>
+<td style="text-align:right;">
+652
+</td>
+</tr>
+</tbody>
+</table>
+<p>So in these tables we can, indeed, calculate OR’s, those OR’s will asses the following diferences (or contrasts):</p>
+<p><span class="math display">\[P(BM=Yes|Treatment=A)\; vs \;(BM=Yes|Treatment=B)\]</span>
+and
+<span class="math display">\[P(BM=Yes|Treatment=A)\; vs \;(BM=Yes|Treatment=C)\]</span></p>
+<p>The corresponding OR’s are <span class="math inline">\(OR_{A-B}\)</span> and <span class="math inline">\(OR_{A-C}\)</span>. In this setting, we are selecting treatment <span class="math inline">\(A\)</span> as the reference treatment, comparing the remaining treatments with it. Lets calculate those OR’s.</p>
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ORex2">Table 2.3: </span>OR’s for reference treatment A, with 95% confidence intervals
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+lower
+</th>
+<th style="text-align:right;">
+upper
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:right;">
+0.0947467
+</td>
+<td style="text-align:right;">
+0.0643886
+</td>
+<td style="text-align:right;">
+0.1371569
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:right;">
+0.0324412
+</td>
+<td style="text-align:right;">
+0.0208714
+</td>
+<td style="text-align:right;">
+0.0492784
+</td>
+</tr>
+</tbody>
+</table>
+So it seem that treatment <span class="math inline">\(A\)</span> has fewer cases of behavior modifications compared to the other treatments. It would be nice to have a graph wich allows us to see this more clearly. In fact this graph exists and is called mosaic plot
+<center>
+<div class="figure"><span id="fig:rocg1"></span>
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAwAAAAKgCAIAAACjiI2DAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO3deXhV9Z348ZOEPYkCbiyyGRAURcENFStoURBcQNxGZGTRqpVRB+soSqEOVVH7s4+itiqLVCtIRwWXIsMqCuJSxR1QwAKCbAKBEMj2++M+EylhSSDkwP2+Xn/0ufmee8jnGEvennvOvSlFRUURAEBIUuMeAACgogkgACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCACNXPmzJSUlJSUlD/96U9xz0J5mjJlSsq/qlKlSv369bt06TJ+/Pi4p2N/+fDDD/v169eiRYvMzMwaNWpkZWVdeumlf/vb3woKCuIejQNUSlFRUdwzQAyuuOKKCRMmHHLIIXXr1v3888/jHodyM2XKlI4dO2ZlZfXo0SOxsnnz5oULF06dOjU/P3/QoEH3339/vBNSvvLz82+77bannnoqJSXllFNOadWqVVpa2uLFi2fOnJmXl9e+fftx48YdeeSRcY/JAUcAEaLly5c3bty4Y8eOxxxzzJNPPjlz5sxf/OIXcQ9F+UgEUJcuXd54443t1999991zzjmnWrVq69evr1q1alzjUe769+8/fPjwY4899qWXXmrTpk3x+sqVK3v37j1p0qTzzz9/ypQpMU7IgclLYIToT3/6U35+fq9evXr16hVF0ZNPPhn3ROx37dq1q1u3bm5u7saNG+OehXLzySefDB8+vFatWlOnTt2+fqIoqlOnzoQJE9q2bXvYYYf9+OOPcU3IAatS3ANARdu2bdszzzxz2GGHdevWrWrVqieeeOKrr766YsWKunXrxj0a+9Hq1atXrVrVsGHDI444Iu5ZKDejRo2KoujWW289+uijS26tUqXKnDlzKnwoDg7OABGcl19+edWqVb169Uq8DnLjjTfm5eU988wzcc9FecrJyfn2/8ybN2/s2LEdO3asXr26H3SSmT17dhRFnTt3jnsQDj6uASI4bdu2nTt37tdff92iRYsoijZs2FCvXr2aNWt+//33lSo5J3rQS1wDVHK9cePGTzzxRNeuXSt+JPafBg0aLFu2bNmyZfXr1497Fg4y/ronLB999NHcuXPPOeecRP1EUXTooYdeeeWVo0ePfu2114rvG+Jgd8opp9x9992Jx3l5eStXrnz77bcvueSSiy+++MUXX8zIyIh3PMpL5cqVoyhyrzt7QQARlieeeCKKomrVqg0ZMqR4MScnJ4qiJ598UgAljTp16uzw07zjjjseeOCBe++995577kn8a0ASqF+//uLFi7/77ruGDRvGPQsHGS+BEZA1a9YcffTRW7du3dUTvvjii5YtW1bkSJS7Xd0GH0XRypUr69at26hRoyVLlsQxGuVv4MCBDz744K233rqrqP3hhx9SU1Pr1KlTwYNx4HMRNAF59tlnt27detdddxWVkPjb86mnnop7RvajxKm+xP+SHK677rrU1NTnnntu3rx5Jbfm5+dfddVVjRs3/uSTTyp+Ng5wAohQFBQUPP3006mpqTfddFPJrb169crIyPjLX/6SnZ1d8bNRAQoKCn7/+99HUdShQ4e4Z6HcHHfccQMHDszNze3YsePf//737TctW7asc+fO77777sUXX9y6deu4JuSA5RogQjFhwoSlS5d27dq1SZMmJbcecsgh11577Z///OcxY8b8+te/rvjxKF/ffPNN8UXQhYWFP/744zvvvLNkyZKjjz764Ycfjnc2yteQIUPy8/OHDRt20UUXNW/e/NRTT61aterixYtnzZqVn5/fu3dvZ3bZKdcAEYrzzjtv+vTpb7311q7eMuTzzz9v1arV8ccf/+WXX1bwbJSjnd4Gn56e3qxZs65du/7nf/5nrVq1YhmM/eqTTz4ZNWrUtGnTli9fvm3btqOPPvqMM87o16+fT7lhVwQQABAc1wABAMERQABAcAQQABAcd4GxBwsXLvzjH/+Yn58f9yCUweGHHz548OAqVarssF5QUDB06NAffvghlqmoALVq1Ro8eHD16tV3WC8qKnrwwQe///77WKZif7j00ksvuuiiuKc4mJV8RzjY3oABA+L+l5S98c4775T8aX722Wdxz8V+N2nSpJI/+m+//TbuuShnrVq12v+/AZKZM0DsQeLcT9ejm511pA9bPjg8t/DTRdnr8/LySm5KLNarkXlri1MqfC72u+e/+3z+hrW7+dEfUa3GHcefXuFzUc5W5eb88asPnJjfRwKIUmlz2FHXNPEhWQeHN5Z+uyh7/W6eULtKNT/NpDRlxZL5G9bu5gmHVK7qR58EFm5c98evPoh7ioOei6ABgOAIIAAgOAIIAAiOAAIAgiOAgrBo0aJXXnml+MuRI0deeOGFXbp0mTRpUoxTAUBc3AWW/L766quzzjqrVatW3bt3j6Lo6aefvuWWWxKb3n777dmzZ59+uttiAQiLM0DJ74EHHkhNTR02bFj0f+8GW79+/QULFsyfP79+/fqPPfZY3AMCQEUTQMnvnXfeufHGG88888woij799NOlS5fefvvtzZo1O/bYY3v16jV37ty4BwSAiiaAkt+qVauOPfbYxONp06ZFUdS5c+fElw0aNFixYkVskwFATARQ8svMzNy8eXPi8ZQpU4466qjjjz8+8eXmzZtr1KgR32gAEA8BlPyysrJeeeWVgoKCefPmTZ06tXPnzikpKYlNM2fObNCgQbzjAUDFE0DJr0+fPjNmzDjqqKNOPfXUgoKC4lvABg0aNGHChMStYQAQFAGU/Pr163fnnXempaXVrVv32WefPe200xLrzz///JlnnjlgwIB4xwOAiud9gJJfamrqI4888sgjj+ywPmHChJNOOik1VQQDEBwBFK7WrVvHPQIAxMN//QehsLBw7Nix11577dlnnz179uzE4pQpUwoKCuIdDABi4QxQ8tu2bdvFF188efLkxJcbN26Moig7O7tLly5nn332pEmTqlSpEuuAAFDRnAFKfo899tjkyZP79u07ceLE4sVKlSr1799/+vTpf/zjH2OcDQBiIYCS30svvXTJJZc899xzxfd/RVFUvXr1Rx999KKLLnrppZdinA0AYiGAkt+CBQuKP/tiB506dVq0aFEFzwMAsRNAya+wsLBq1ao73ZSWlpaXl1fB8wBA7ARQ8mvSpMmcOXNKrhcVFY0fP/6YY46p+JEAIF4CKPn16NFj9OjRL774YmFhYfHiRx99dNlll82YMeOKK66IcTYAiIXb4JPfXXfd9frrr/fs2bN69epRFPXq1Wvjxo1bt26NoqhNmzZ33nln3AMCQEVzBihpTZo0KfEgMzPzvffeGzhw4FFHHRVF0erVq7du3ZqVlfXb3/521qxZ6enpsY4JADEQQEmrc+fON91006ZNm6IoSk9P//3vf7948eLs7OwVK1Zs3rz522+//d3vflejRo24xwSAGAigpNW8efM///nPJ5100qxZs4oXMzIy6tSpo3sACJwASlqffvrpXXfd9f3337dv3/43v/lN4qIfACASQEmsWrVqw4YNmzNnzvHHH//oo4+ecsop//jHP+IeCgAOCAIoyZ122mkff/zxoEGDFixY0LZt2/vvv3/r1q35/yruGQGgogmg5FelSpX777//ww8/PP744wcPHlytWrXK/yruAQGgonkfoFCsWLFi7dq1URRlZmampgpfAILmF2Hy27BhQ58+fTp37rxu3brhw4dv2LBh/b+Ke0AAqGjOACW5v//97zfccMPy5cvPOuus559/vmnTpnFPBADxcwYoaa1fv753794XXXTRmjVrHnrooVmzZqkfAEhwBihptWzZ8ocffmjduvWYMWNOOOGEuMcBgAOIM0BJa9WqVYMGDZo7d676AYAdOAOUtObMmXPqqafGPQUAHIicAUpa6gcAdkUAAQDBEUAAQHAEEAAQHBdBUyrPLvj01X/Oj3sKSmVRtnf3BtgDAcQe1K9fP4qiFVs2rdiyKe5ZKK20tLS6devGPQXAgUsAsQcDBgy44IIL8vPz4x6EMqhdu3aTJk3ingLgwCWA2IPU1NSTTjop7ikAoDy5CBoACI4AAgCC4yUw9uD9998fPHhwYWFh3INQBrVq1RoxYkRmZmbcgwAcoAQQezBu3LjJkyfHPQVldsstt7Rv3z7uKQAOUAKIPSgqKoqiqMWVTRqd77bqg8OH/+/LdfM3OGkHsBsCiFI5tFFGvTOOiHsKSqXqoZXjHgHgQOciaAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIJTKe4BDiC5ubn7+CdUq1atXCYBAPYrAfSz6tWr7+OfUFRUVC6TAAD7lZfAAIDgOAO0o0qVKp166qmtW7fOz8/Pzc3Ny8tzXgcAkowA+llmZmZ2dnZ+fv7777+/YMGCrl27XnPNNRdccEFaWlrcowEA5clLYD9buXLlmDFjOnTokJKSsm7dujFjxlx00UUNGjT4r//6r6+//jru6QCAciOAflajRo3rrrtu2rRpixYtGjJkSJMmTaIoWrFixcMPP3z88cefeeaZzzzzzIYNG+IeEwDYVwJoJxo3bjx48ODvvvtu+vTpvXr1Sk9Pj6Lo/fff/9WvflW3bt2ePXtOnTrVhUEAcPASQLuUkpLSvn37559/fuXKlSNGjGjXrl0URVu2bHnxxRd/+ctfNmnSZPDgwYsXL457TACgzATQnmVkZPTp02fWrFkLFy689957GzRoEEXR999/f//992dlZXXo0GHMmDE5OTlxjwkAlJYAKoOmTZsOHTp0yZIlkydPvvbaazMyMoqKimbMmPHv//7vderU6devX9wDAgClIoDKLDU1tWPHji+88MLq1avHjBlzzDHHRFGUnZ09YsSIuEcDAErF+wDtjSVLlrz44ouvv/76Bx98UHw1dFZWVrxTAQClJIDKIDc395VXXhk5cuS0adOKu6dGjRqXX355nz59zj333HjHAwBKSQCVyscffzxy5Mi//vWv69evL1487bTT+vbte8011xxyyCExzgYAlJUA2p21a9e++OKLI0eOnDdvXvHiEUcc0bNnz759+7Zs2TLG2QCAvSaAdqKwsHDKlCkjRoyYMGHC1q1bE4tpaWkXXHBB3759L7nkksqVK8c7IQCwLwTQv1iyZMmoUaNGjRq1dOnS4sWmTZv27t37+uuvr1evXoyzAQDlRQD97Pzzz58+fXrx1c2HH374ZZdd1rNnT1c3A0CSEUA/mzZtWhRFlSpVatu2badOnc4666zCwsLc3NxJkyaV8k/o1KnT/hwQACgfAmhH+fn577777rvvvrsX+/qEVAA4KHgnaAAgOM4A/WzUqFFxjwAAVAQB9LPrr78+7hEAgIrgJTAAIDgCCAAIjpfAymzt2rUvvPDC559/npqa2qJFix49ejRs2DDuoQCAMhBAO7Fp06Y5c+asXr36sMMOO+OMM2rWrFm8adKkSVdfffWGDRuKVwYOHPjQQw/dfvvtcUwKAOwNAfQvioqKfve73w0bNiw3NzexUq1atf79+z/44INpaWlff/315ZdfnpOTs/0uW7duveOOOzIzM/v27RvHyABAmQmgf5E4nbP9Sm5u7iOPPJKTkzN8+PDBgwfn5ORUr169b9++J598cnZ29ptvvjllypQoiu68887u3bvXqlUrpsEBgDIQQD/79ttvH3300cTjZs2atWnTZuvWrXPmzPnxxx+ffPLJbt26vf766zVq1Jg1a1abNm0ST7v99tuHDh06aNCg9evXjx079uabb45vfACgtNwF9rMXXnghPz8/iqJBgwbNnz9/7Nixr7766j//+c9bbrkliqIBAwbk5ubedNNNxfWTMHDgwKysrCiK3n777VjGBgDKSgD97J133omi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AARHAAEAwRFAAEBwBBAAEBwBBAAERwABAMERQABAcAQQABAcAQQABEcAAQDBEUAAQHAEEAAQHAEEAARHAAEAwRFAAEBwBBAAEBwBBAAERwABAMERQABAcAQQABAcAQQABEcAAQDBEUAAQHAEEAAQHAEEAARHAAEAwRFAAEBwKsU9AAeHrRu2ZS/bHPcUlEpBbuEenrCt0E8zKeXn5u/+CYX5RX70SWDzj1viHiEZCCBK5dNn5n/6zPy4p6AMUlJSdrW4/rvsv3WdUuETUUF286PPXrrZjx4SBBB70KlTp7feequgoCDuQSiDww477MQTTyy53qxZs7PPPnvFihUVPxIVo2bNmm3atCm53qhRo/bt2//zn/+s+JHYT3r06BH3CAe3lKKiorhnAACoUC6CBgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggACI4AAgCCI4AAgOAIIAAgOAIIAAiOAAIAgiOAAIDgCCAAIDgCCAAIjgACAIIjgACA4AggACA4AggorXHjxg0ZMmTJkiVxD7IHB8ucZZWsxwWxSCkqKop7BuDgkJWVtWjRounTp7dv3z7uWXbnYJmzrJL1uCAWzgABpbJixYpFixbFPcWeHSxzllWyHhfERQABpTJr1qy4RyiVg2XOskrW44K4CCBgD+67776UlJSrrroq8WWHDh1SUlJSUlJGjx6dWGnatGlKSsqpp54aRdFnn33WqVOn2rVrp6Sk7HC1SmFh4bhx46644opGjRpVr149IyMjKyvruuuumzRp0m6++6pVq4YOHXrOOecceeSRVapUqVGjRpMmTa644oqJEyeWdc7jjjsuJSWldevWURRlZ2cPHTr0xBNPzMjIqF279mmnnfbUU08VFhYmnjl//vxf/epXWVlZ1apVq1WrVocOHV577bVdTVjW49p+jMLCwhEjRpx77rlHHXVUlSpVjjzyyC5durz55ptlOi5gbxQB7Na999670789Ro0alXjCCSecEEXRcccdt3z58po1axY/YfHixcV/yPLlyxOFtFNdunTJzs4u+a1ff/31zMzMXe3VrVu3bdu2lX7ONm3aRFF07LHHrl27tmXLliWfef311xcVFb399tsZGRkltz7xxBMlJ9yL4yoeIycnp3Pnzjvd8YEHHij9cQF7QQABe1BQUJCXl/cf//Efid+7U6ZMycvLy8vLKywsTDwh8Ru9cePG/fv3j6KoXQ8obQQAAAigSURBVLt2/fv379ev348//ph4wsaNG7OyshK7X3755TNnzly9evWKFSveeuut8847L7F+wQUX7PB9v/nmm+rVq0dRlJqaeuedd7733nuLFi364IMPhg8ffsQRRyT2+s1vflP6OU8//fQoiho0aHDVVVcdfvjhjz/++Lx58/7xj388/PDDVatWTez1+uuv16pVq3Xr1uPHj//yyy/fe++9m266KbEpIyNjh5rZu+MqHuOWW26pUqXK7bffPnPmzK+++mr69Ok33HBDYq+0tLTifNzjcQF7QQABpXLbbbclfgFPnz59h02J3+i1a9euVavWU089VXLfX//614l977777h02FRQU9OjRI7H1r3/96/abimvg3nvv3WGvb7/9tnLlylEU1ahRIzc3t5RznnHGGYm2yMjI+Oabb7bf9NBDDyX2qly5cps2bTZv3rz91q5duya2Tpw4cd+Pq3iMtLS0t99+e4cde/bsmdjrkUceKeVxAXvBNUDAvkpJSYmiaN26daeddtrNN9+8w9YNGzaMGjUqiqImTZoMHTp0h62pqamPPfZYpUqVoih6+umnt99Uv379Sy+9tG3btn369Nlhr6ysrA4dOkRRlJOT89lnn5Vp2oKCgttuu6158+bbL15yySWJB3l5ecOGDatRo8ZOt3799df7flzFY/Tp0+eCCy7YYf3qq69OPPjiiy/KdFxAmQggoNxcd911JRdnzpyZk5MTRVGPHj3S0tJKPuHoo49OnEOaPXt24pkJgwcPfu211+bMmXPMMceU3KtZs2aJB2vWrCnrnJdeeukOK40aNUo8SE9PL371quTW9evXFy/u9XEV+7d/+7eSi02aNEk8WLduXSkOBdhLleIeAEgeO70c+OOPP048OOyww3b1LsaNGzeePXt2QUHBZ5991rZt29J8r2rVqiUeFBQUlHXOY489doeVxMVGURQ1adIkNXXH/zIs3rpt27bixX0/rp1eiF180ff23wsodwIIKDd16tQpubh69erEg7vvvvvuu+/e/Z+watWq7b/Mzc196aWX3njjjc8///zHH3/ctGlT8Z3q+yI9PX2HlcSreDvdtP3W7e3LcSXs9Aa3nX4voNwJIKDcFJ+V2d5OX/3ZlY0bNxY//vLLLy+++OLFixcXr1StWrX4BvWcnJwtW7bs7aTlYK+PCzgQuAYI2L+Kz3OMGzduj/dlFN8DlZOT06VLl0T9nHfeeZMnT964cWNubu6a/3PLLbfEdkhRFO3tcQEHCGeAgP3rqKOOSjzY6ctAu/Lyyy9///33URSde+65kydPLnmV8aZNm8prwr2zd8cFHCCcAQL2r8TbJEZR9OGHH5Z+r48++ijx4IYbbtjpPVbF1yDHZe+OCzhACCCgbIqKisr0/F/84heJC3cmTJiw/W3k23v66afHjx//008/Fa8UX9+z/WdrFJsyZUpxIe3qsuiyzllWe3dc+25/HxcEQgABpVL83oA//PBDmXbMyMhIvJPhhg0bbr755pK98sYbb9x6661XXnnl9m+iWPzWO7Nnz97h+V999VXPnj3r1auX+HKHV6D2es6y2rvj2msVdlwQCNcAAaVS/AZ9w4YNq127dnp6ekpKyjnnnFOafYcOHfrmm29+9913Y8eOXbZs2R133HHSSScVFRUtWbJk7Nixo0ePLiwszMjIGDZsWPEu3bt3HzJkSFFR0R/+8Ic6depcdtll6enpixYtevnll4cPH968efN77rkn8QHpI0eO7NSpU3p6eq1atfZxzrLai+PaaxV5XBCEffskDSAUa9euPfTQQ7f/2+Oqq65KbEp8uFUURVu2bNnV7suWLdvNp6Y3bNhw3rx5O+yyq09Bb9Wq1fLly3/66aft5znllFNKP2deXl7JCRObzjjjjJKbZs2aldg6YMCAfT+u3f/jWrp0aWLrhRdeuP36bo4L2AteAgNKpXbt2pMnT27Xrl1mZmaNGjWaNWu2m1/8JdWvX/+DDz54+eWXr7jiioYNG1avXj09Pb1p06adOnUaPXr0V1991apVqx12GTp06N/+9rfzzz+/Vq1alStXrlu37nnnnffss89+8MEH9erVq1mz5v/8z/+cfPLJ1apVO/LII9u1a1cuc5bVXhzX3qng44Kkl1LkejoAIDDOAAEAwRFAAEBwBBAAEBwBBAAERwABAMERQABAcAQQABAcAQQABEcAAQDBEUAAQHAEEAAQHAEEAARHAAEAwRFAAEBwBBAAEBwBBAAERwABAMERQABAcAQQABAcAQQABEcAAQDBEUAAQHAEEAAQHAEEAARHAAEAwRFAAEBwBBAAEBwBBAAERwABAMERQABAcAQQABAcAQQABEcAAQDBEUAAQHAEEAAQHAEEAARHAAEAwRFAAEBwBBAAEBwBBAAERwABAMERQABAcAQQABAcAQQABEcAAQDBEUAAQHAEEAAQHAEEAARHAAEAwRFAAEBwBBAAEBwBBAAERwABAMERQABAcAQQABAcAQQABEcAAQDBEUAAQHAEEAAQHAEEAARHAAEAwRFAAEBwBBAAEBwBBAAERwABAMERQABAcAQQABAcAQQABEcAAQDBEUAAQHAEEAAQHAEEAARHAAEAwRFAAEBwBBAAEBwBBAAERwABAMERQABAcAQQABAcAQQABEcAAQDBEUAAQHAEEAAQHAEEAARHAAEAwRFAAEBwBBAAEBwBBAAERwABAMERQABAcAQQABAcAQQABEcAAQDBEUAAQHAEEAAQHAEEAARHAAEAwRFAAEBwBBAAEBwBBAAERwABAMERQABAcAQQABAcAQQABEcAAQDBEUAAQHAEEAAQHAEEAARHAAEAwRFAAEBwBBAAEBwBBAAERwABAMERQABAcAQQABAcAQQABEcAAQDBEUAAQHAEEAAQHAEEAARHAAEAwRFAAEBwBBAAEBwBBAAERwABAMERQABAcP4/ulY7zpJczaYAAAAASUVORK5CYII=" alt="mosaic plot for BM conditional probabiliteis" width="384" />
+<p class="caption">
+Figure 2.1: mosaic plot for BM conditional probabiliteis
+</p>
+</div>
+</center>
+<p>This OR’s approach for this <span class="math inline">\(3\times 2\)</span> can be modified, changing the reference treatment and obtaining diferent OR’s. As stated in the previous section the order of the rows ans columns maters, so if we swap columns diferent OR’s will be obtained, however it can be checked that these OR’s for the swaped columns are the multiplicative inverse of the ones presented here.</p>
+</div>
+</div>
+<div id="logistic-regression" class="section level1">
+<h1><span class="header-section-number">3</span> Logistic regression</h1>
 </div>
 
 

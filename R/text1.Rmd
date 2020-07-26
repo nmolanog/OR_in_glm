@@ -17,6 +17,7 @@ p_load(boot)
 p_load(epitools)
 p_load(kableExtra)
 p_load(knitr)
+p_load(ggmosaic)
 set.seed(150)
 ```
 
@@ -119,3 +120,94 @@ You can verify that indeed
 
 $$OR_{p_{vac}|p_{no \; vac}}=1/OR_{q_{vac}|q_{no \; vac}}$$
 In conclucion, for a $2 \times 2$ table two different OR's can be computed and they are related since one is the multiplicative inverse of the other. However there exist more than two posible configurations for the contingency table associated with this two OR and the configuration of the table is very important since it is related with the conditional probabilities analysed.
+
+# Odds ratios for $K \times 2$ tables
+
+OR's can be used to characterize the associatiosn of between an dichotumous outcome of interest and a categorical variable with nore than two categories. Consider the next example.
+
+## Example 2
+
+```{r echo=FALSE, results = 'asis',message = FALSE, warning =F}
+N<-1000
+
+treatment<-sample(LETTERS[1:3],N,replace =T)
+
+cons<-NA
+cons[treatment %in% "A"]<-rnorm(sum(treatment %in% "A"),100,10)
+cons[treatment %in% "B"]<-rnorm(sum(treatment %in% "B"),100,10)
+cons[treatment %in% "C"]<-rnorm(sum(treatment %in% "C"),100,10)
+
+sim_probs<-rep(NA,N)
+
+eqmA<-matrix(c(1,min(cons),
+               1,max(cons)),byrow = T,nrow=2)
+eqbA<-qlogis(c(.01,.6))
+Abetas<-solve(eqmA,eqbA)
+
+eqmB<-matrix(c(1,min(cons),
+               1,max(cons)),byrow = T,nrow=2)
+eqbB<-qlogis(c(.3,.9))
+Bbetas<-solve(eqmB,eqbB)
+
+eqmC<-matrix(c(1,min(cons),
+               1,max(cons)),byrow = T,nrow=2)
+eqbC<-qlogis(c(.99,.4))
+Cbetas<-solve(eqmC,eqbC)
+
+sim_probs[treatment %in% "A"]<-inv.logit(Abetas[1]+Abetas[2]*cons[treatment %in% "A"])
+sim_probs[treatment %in% "B"]<-inv.logit(Bbetas[1]+Bbetas[2]*cons[treatment %in% "B"])
+sim_probs[treatment %in% "C"]<-inv.logit(Cbetas[1]+Cbetas[2]*cons[treatment %in% "C"])
+
+z0<-data.frame(treatment,cons,sim_probs,stringsAsFactors = T)
+z0$BM<-map_dbl(z0$sim_probs,~rbinom(1,1,.))
+z0$BM<-factor(z0$BM,level=0:1,labels = c("No","Yes"))
+```
+
+A researcher has `r N` mice which were asigned randomly to one of `r length(levels(z0$treatment))` treatments: `r levels(z0$treatment)`. The researchers were interested in how the treatment is related to behavior modifications ($BM=Yes$) or not ($BM=No$). Table \@ref(tab:ex2t1) presents the rewsults of this experiment.
+
+```{r ex2t1, echo=FALSE}
+z0$BM<-relevel(z0$BM,ref="Yes")
+###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
+ex2t1<-kable(table(z0[,c("treatment","BM")])%>%addmargins,caption="contingency table of treatment vs behavior modifications")
+kable_styling(ex2t1,"striped", position = "center",full_width = F)%>% add_header_above(c("treatment","BM"=2," "))
+# res<-t(table(z0)%>%addmargins)  
+# knitr::kable(res,caption="Tabla de contingencia: status vs exposition")
+```
+
+It must be noted that the objective of this experiment is to study the following conditional probabilities:
+$$P(BM=Yes|Treatment=A), \;(BM=Yes|Treatment=B), \;(BM=Yes|Treatment=C)$$
+And to assess wether they differ at all, which is biger, etc. How OR's can help us to characterise the change in conditional distributions of behavior modifications given the treatments asigned? OR's are designed to measure the association between dichotumous variables, however, here one of the variables has `r length(levels(z0$treatment))` categories. The key is to note that in table \@ref(tab:ex2t1) there exist several $2 \times 2$ tables for example
+
+```{r nested2by2, echo=FALSE}
+###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
+ex2t1a<-kable(table(z0[,c("treatment","BM")])%>%{.[1:2,]}%>%addmargins,caption="a) rows A and B")
+kable_styling(ex2t1a,"striped", position = "float_left",full_width = F)%>% add_header_above(c("treatment","BM"=2," "))
+
+ex2t1b<-kable(table(z0[,c("treatment","BM")])%>%{.[c(1,3),]}%>%addmargins,caption="b) rows A and C")
+kable_styling(ex2t1b,"striped", position = "left",full_width = F)%>% add_header_above(c("treatment","BM"=2," "))
+```
+
+So in these tables we can, indeed, calculate OR's, those OR's will asses the following diferences (or contrasts):
+
+$$P(BM=Yes|Treatment=A)\; vs \;(BM=Yes|Treatment=B)$$
+and 
+$$P(BM=Yes|Treatment=A)\; vs \;(BM=Yes|Treatment=C)$$
+
+The corresponding OR's are $OR_{A-B}$ and $OR_{A-C}$. In this setting, we are selecting treatment $A$ as the reference treatment, comparing the remaining treatments with it. Lets calculate those OR's.
+
+```{r ORex2, echo=FALSE}
+###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
+ORex2<-kable(oddsratio(table(z0$treatment,z0$BM))$measure,caption="OR's for reference treatment A, with 95% confidence intervals")
+kable_styling(ORex2,"striped", position = "center",full_width = F)
+```
+
+So it seem that treatment $A$ has fewer cases of behavior modifications compared to the other treatments. It would be nice to have a graph wich allows us to see this more clearly. In fact this graph exists and is called mosaic plot
+<center>
+```{r rocg1, message = FALSE, warning =F, echo=F, fig.width=4, fig.height=3.5, fig.cap="mosaic plot for BM conditional probabiliteis"}
+mosaicplot(table(z0$treatment,z0$BM),col=c(2,3),main = "",ylab="BM",xlab="treatment")
+```
+</center>
+
+This OR's approach for this $3\times 2$ can be modified, changing the reference treatment and obtaining diferent OR's. As stated in the previous section the order of the rows ans columns maters, so if we swap columns diferent OR's will be obtained, however it can be checked that these OR's for the swaped columns are the multiplicative inverse of the ones presented here.
+
+# Logistic regression
