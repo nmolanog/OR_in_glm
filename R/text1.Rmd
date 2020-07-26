@@ -204,7 +204,9 @@ kable_styling(ORex2,"striped", position = "center",full_width = F)
 So it seem that treatment $A$ has fewer cases of behavior modifications compared to the other treatments. It would be nice to have a graph wich allows us to see this more clearly. In fact this graph exists and is called mosaic plot
 <center>
 ```{r rocg1, message = FALSE, warning =F, echo=F, fig.width=4, fig.height=3.5, fig.cap="mosaic plot for BM conditional probabiliteis"}
-mosaicplot(table(z0$treatment,z0$BM),col=c(2,3),main = "",ylab="BM",xlab="treatment")
+ggplot(data = z0) +
+  geom_mosaic(aes(x = product(BM,treatment), fill=BM), na.rm=TRUE)+
+  labs(x = "treatment",y="")+theme_bw()
 ```
 </center>
 
