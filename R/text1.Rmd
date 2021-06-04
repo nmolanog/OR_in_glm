@@ -7,8 +7,16 @@ output:
 bibliography: references.bib  
 ---
 
-```{r echo=F, message = FALSE, warning =F}
-library(pacman)
+
+# Introduction
+Odds ratios are the prefered effect measure in health sciences to describe asociations between a dichotumous outcome of interest and a categorical variable, most often dichotumous, but not always. Lets start this discution with an example.
+
+## Example1
+Considere an study in which `r (n<-250)` patients are interrogated about having taken any vaccinations against seasonal flu (vac) and diagnostiqued in the past six monts with seasonal flu (flu). 
+
+Here we present the code to simulate some data for this essenario:
+```{r ,echo=T}
+#load packages
 library(pacman)
 p_load(here)
 p_load(tidyverse)
@@ -19,13 +27,8 @@ p_load(kableExtra)
 p_load(knitr)
 p_load(ggmosaic)
 set.seed(150)
-```
 
-# Introduction
-Odds ratios are the prefered effect measure in health sciences to describe asociations between an dichotumous outcome of interest and a categorical variable, most often dichotumous, but not always. Lets start this discution with an example.
-
-## Example1
-```{r echo=FALSE, results = 'asis',message = FALSE, warning =F}
+#simulation
 ca_ctr_r<-.3
 n<-250
 nCA<-round(n*ca_ctr_r)
@@ -36,18 +39,20 @@ exp_CTR<-.75
 z0[z0$status %in% "flu","vac"]<-ifelse(runif(nCA)<exp_CA,"yes","no")
 z0[z0$status %in% "no_flu","vac"]<-ifelse(runif(n-nCA)<exp_CTR,"yes","no")
 z0$vac<-factor(z0$vac,levels = c("yes","no"))
+z0$status<-factor(z0$status)
 ```
 
-Considere an study in which `r n` patients are interrogated about having taken any vaccinations against seasonal flu (vac) and diagnostiqued in the past six monts with seasonal flu (flu). The data of the study can be summarized in the following contingency table (\@ref(tab:conttabl))
+The data of the study is stored in the object `z0` here we present the summary:
+```{r ,echo=T}
+summary(z0)
+```
+An other way to summarize the info is in the following contingency table (\@ref(tab:conttabl))
 
-```{r conttabl, echo=FALSE}
-###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
+```{r conttabl, echo=F}
 res<-kable(t(table(z0)%>%addmargins),caption="contingency table of flu vs vac")
 kable_styling(res,"striped", position = "center",full_width = F)%>% add_header_above(c("vac","status"=2," "))
-# res<-t(table(z0)%>%addmargins)  
-# knitr::kable(res,caption="Tabla de contingencia: status vs exposition")
 ```
-The main interest in this study is to determine if the proportion of patients diagnostiqued with flu is diferent depending on the intake of the vaccine. A first approach to this, is to compute conditional proportions of infections for those that were exposed to the vaccine and for those who not. This is easly done by calculating the row proportions in the table \@ref(tab:conttabl), as shown below
+The main interest in this study is to determine if the proportion of patients diagnostiqued with `flu` is diferent depending on the intake of the vaccine. A first approach to this, is to compute conditional proportions of infections for those that were exposed to the vaccine and for those who not. This is easly done by calculating the row proportions in the table \@ref(tab:conttabl), as shown below
 
 ```{r proptable, echo=FALSE}
 ###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
@@ -61,11 +66,23 @@ or1<-t(table(z0))%>%oddsratio
 As can be seen in table \@ref(tab:proptable), proportion of infections is higher in the group of no vaccination. Lets calculate de OR for this table, defined as: 
 
 \begin{equation}
-OR_{p_{vac}|p_{no \; vac}}=\frac{\frac{p_{vac}}{1-p_{vac}}}{\frac{p_{no \;vac}}{1-p_{no \;vac}}} (\#eq:or1)
+OR(flu|vac=yes \; vs \; vac=no)=\frac{\frac{P(flu|vac=yes)}{1-P(flu|vac=yes)}}{\frac{P(flu|vac=no)}{1-P(flu|vac=no)}} (\#eq:or1)
 \end{equation}
 
-Where $p_{vac}$ stands for the proportion of patients with flu which were previously vaccinted, or more exactly, in terms of conditional probabilities:$p_{vac}=P(flu|vac)$. Similarly $p_{no \;vac}$ stands for the proportion of patients with flu which did not recive any vaccination or $P(flu|no \;vac)$. Therefore
-$OR_{p_{vac}|p_{no \; vac}}=$ `r or1$measure[2,1]`, and the $95\% \; CI=$ `r or1$measure[2,2:3]`
+Where $P(flu|vac=yes)$ stands for the proportion of patients with flu which were previously vaccinted, or more exactly, in terms of conditional probabilities: the probability of being infected with `flu` given that the subject has been vaccinated . Similarly $P(flu|vac=no)$ stands for the proportion of patients with flu which did not recive any vaccination. 
+
+We have adopted here the notation 
+$$OR(flu|vac=yes \; vs \; vac=no)$$
+in order to specify that the outcome of interest is $flu$ and that this outcome is being compared in $vac=yes$ vs $vac=no$ groups. This detailed notation will be usefull to highlight some propoerties of the OR later.
+
+Let us calculate this OR ussing function `oddsratio` from packatge `epitools`:
+
+```{r ,echo=T}
+(or1<-t(table(z0))%>%oddsratio)
+```
+
+Therefore
+$OR(flu|vac=yes \; vs \; vac=no)=$ `r or1$measure[2,1]`, and the $95\% \; CI=$ (`r or1$measure[2,2:3]`)
 
 It is very important to note that the different OR's can be computed from this same table. If we transpose the table we get this
 
@@ -80,15 +97,20 @@ or2<-table(z0)%>%oddsratio
 Calculating the OR from this table we obtain the following:
 
 \begin{equation}
-OR_{p_{flu}|p_{no \; flu}}=\frac{\frac{p_{flu}}{1-p_{flu}}}{\frac{p_{no \;flu}}{1-p_{no \;flu}}} (\#eq:or2)
+OR(vac=yes|flu \; vs \; no\; flu)=\frac{\frac{P(vac=yes|flu)}{1-P(vac=yes|flu)}}{\frac{P(vac=yes|no \;flu)}{1-P(vac=yes|no \;flu)}} (\#eq:or2)
 \end{equation}
 
-Now, $p_{flu}$ stands for the proportion of patients with flu that were vaccinated, that is $P(vac|flue)$ and $p_{no \;flu}$ stands for the proportion of patients without flu which did not recive any vaccination (i.e $P(vac|no \; flu)$). Therefore
-$OR_{p_{flu}|p_{no \; flu}}=$ `r or2$measure[2,1]`, and the $95\% \; CI=$ `r or2$measure[2,2:3]`
+Now, $P(vac=yes|flu)$ stands for the proportion of patients with flu that were vaccinated and $P(vac=yes|no \;flu)$ stands for the proportion of patients without flu which recived any vaccination. Therefore
+
+```{r ,echo=T}
+(or2<-table(z0)%>%oddsratio)
+```
+
+$OR(vac=yes|flu \; vs \; no flu)=$ `r or2$measure[2,1]`, and the $95\% \; CI=$ (`r or2$measure[2,2:3]`)
 
 As can be seen 
-$$OR_{p_{vac}|p_{no \; vac}}=OR_{p_{flu}|p_{no \; flu}}$$
-although they are the same, the conditional probabilities analised are very diferent
+$$OR(flu|vac=yes \; vs \; vac=no)=OR(vac=yes|flu \; vs \; no \;flu)$$
+although they are the same, the conditional probabilities analysed are very different
 
 ```{r proptable2, echo=FALSE}
 ###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
@@ -97,7 +119,7 @@ kable_styling(resprop,"striped", position = "float_left",full_width =F)%>% add_h
 kable_styling(resprop2,"striped", position = "left",full_width = F)%>% add_header_above(c("flu","vac"=2))
 ```
 
-Still, there exist another posible OR calculation for the same data set. Consider swaping the columns in table \@ref(tab:conttabl), obtaining this:
+Still, there exist another possible OR calculation for the same data set. Consider swaping the columns in table \@ref(tab:conttabl), obtaining this:
 
 ```{r conttablinv, echo=FALSE}
 ###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
@@ -110,20 +132,25 @@ or3<-t(table(z0))%>%oddsratio
 
 calculating the OR for this table now looks like this:
 \begin{equation}
-OR_{q_{vac}|q_{no \; vac}}=\frac{\frac{q_{vac}}{1-q_{vac}}}{\frac{q_{no \;vac}}{1-q_{no \;vac}}} (\#eq:or3)
+OR(no \;flu|vac=yes \; vs \; vac=no)=\frac{\frac{P(no \;flu|vac=yes)}{1-P(no \;flu|vac=yes)}}{\frac{P(no \;flu|vac=no)}{1-P(no \;flu|vac=no)}} (\#eq:or3)
 \end{equation}
 
-where $q_{vac}=P(no \; flu|vac)=1-P(flu|vac)$ and $q_{no \;vac}=P(no \; flu|no \;vac)=1-p_{no \;vac}$. Therefore
-$OR_{q_{vac}|q_{no \; vac}}=$ `r or3$measure[2,1]`, and the $95\% \; CI=$ `r or3$measure[2,2:3]`
+where $P(no \; flu|vac=yes)=1-P(flu|vac=yes)$ and $P(no \; flu|vac=no)=1-P(flu|vac=no)$. Therefore
+
+```{r ,echo=T}
+z0$status<-factor(z0$status,levels = c("no_flu","flu"))
+(or3<-t(table(z0))%>%oddsratio)
+```
+$OR(no \; flu|vac=yes \; vs \; vac=no)=$ `r or3$measure[2,1]`, and the $95\% \; CI=$ `r or3$measure[2,2:3]`
 
 You can verify that indeed 
 
-$$OR_{p_{vac}|p_{no \; vac}}=1/OR_{q_{vac}|q_{no \; vac}}$$
+$$OR(flu|vac=yes \; vs \; vac=no)=\frac{1}{OR(no\;flu|vac=yes \; vs \; vac=no)}$$
 In conclucion, for a $2 \times 2$ table two different OR's can be computed and they are related since one is the multiplicative inverse of the other. However there exist more than two posible configurations for the contingency table associated with this two OR and the configuration of the table is very important since it is related with the conditional probabilities analysed.
 
 # Odds ratios for $K \times 2$ tables
 
-OR's can be used to characterize the associatiosn of between an dichotumous outcome of interest and a categorical variable with nore than two categories. Consider the next example.
+OR's can be used to characterize the associations of between a dichotomous outcome of interest and a categorical variable with more than two categories. Consider the next example.
 
 ## Example 2
 
@@ -163,7 +190,44 @@ z1$BM<-map_dbl(z1$sim_probs,~rbinom(1,1,.))
 z1$BM<-factor(z1$BM,level=0:1,labels = c("No","Yes"))
 ```
 
-A researcher has `r N` mice which were asigned randomly to one of `r length(levels(z1$treatment))` treatments: `r levels(z1$treatment)`. The researchers were interested in how the treatment is related to behavior modifications ($BM=Yes$) or not ($BM=No$). Table \@ref(tab:ex2t1) presents the rewsults of this experiment.
+A researcher has `r N` mice which were assigned randomly to one of `r length(levels(z1$treatment))` treatments: `r levels(z1$treatment)`. The researchers were interested in how the treatment is related to behavior modifications ($BM=Yes$) or not ($BM=No$). Here is the code to simulate this data set:
+
+```{r echo=T,eval=FALSE}
+N<-1000
+
+treatment<-sample(LETTERS[1:3],N,replace =T)
+
+cons<-NA
+cons[treatment %in% "A"]<-rnorm(sum(treatment %in% "A"),100,10)
+cons[treatment %in% "B"]<-rnorm(sum(treatment %in% "B"),100,10)
+cons[treatment %in% "C"]<-rnorm(sum(treatment %in% "C"),100,10)
+
+sim_probs<-rep(NA,N)
+
+eqmA<-matrix(c(1,min(cons),
+               1,max(cons)),byrow = T,nrow=2)
+eqbA<-qlogis(c(.01,.6))
+Abetas<-solve(eqmA,eqbA)
+
+eqmB<-matrix(c(1,min(cons),
+               1,max(cons)),byrow = T,nrow=2)
+eqbB<-qlogis(c(.3,.9))
+Bbetas<-solve(eqmB,eqbB)
+
+eqmC<-matrix(c(1,min(cons),
+               1,max(cons)),byrow = T,nrow=2)
+eqbC<-qlogis(c(.99,.4))
+Cbetas<-solve(eqmC,eqbC)
+
+sim_probs[treatment %in% "A"]<-inv.logit(Abetas[1]+Abetas[2]*cons[treatment %in% "A"])
+sim_probs[treatment %in% "B"]<-inv.logit(Bbetas[1]+Bbetas[2]*cons[treatment %in% "B"])
+sim_probs[treatment %in% "C"]<-inv.logit(Cbetas[1]+Cbetas[2]*cons[treatment %in% "C"])
+
+z1<-data.frame(treatment,cons,sim_probs,stringsAsFactors = T)
+z1$BM<-map_dbl(z1$sim_probs,~rbinom(1,1,.))
+z1$BM<-factor(z1$BM,level=0:1,labels = c("No","Yes"))
+```
+Data is stored in object z1. Table \@ref(tab:ex2t1) presents the results of this experiment.
 
 ```{r ex2t1, echo=FALSE}
 z1$BM<-relevel(z1$BM,ref="Yes")
@@ -176,7 +240,7 @@ kable_styling(ex2t1,"striped", position = "center",full_width = F)%>% add_header
 
 It must be noted that the objective of this experiment is to study the following conditional probabilities:
 $$P(BM=Yes|Treatment=A), \;(BM=Yes|Treatment=B), \;(BM=Yes|Treatment=C)$$
-And to assess wether they differ at all, which is biger, etc. How OR's can help us to characterise the change in conditional distributions of behavior modifications given the treatments asigned? OR's are designed to measure the association between dichotumous variables, however, here one of the variables has `r length(levels(z1$treatment))` categories. The key is to note that in table \@ref(tab:ex2t1) there exist several $2 \times 2$ tables for example
+And to assess wether they differ at all, which is biger, etc. How OR's can help us to characterize the change in conditional distributions of behavior modifications given the treatments assigned? OR's are designed to measure the association between dichotomous variables, however, here one of the variables has `r length(levels(z1$treatment))` categories. The key is to note that in table \@ref(tab:ex2t1) there exist several $2 \times 2$ tables for example
 
 ```{r nested2by2, echo=FALSE}
 ###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
@@ -187,21 +251,25 @@ ex2t1b<-kable(table(z1[,c("treatment","BM")])%>%{.[c(1,3),]}%>%addmargins,captio
 kable_styling(ex2t1b,"striped", position = "left",full_width = F)%>% add_header_above(c("treatment","BM"=2," "))
 ```
 
-So in these tables we can, indeed, calculate OR's, those OR's will asses the following diferences (or contrasts):
+So in these tables we can, indeed, calculate OR's, those OR's will asses the following differences (or contrasts):
 
 $$P(BM=Yes|Treatment=A)\; vs \;(BM=Yes|Treatment=B)$$
 and 
 $$P(BM=Yes|Treatment=A)\; vs \;(BM=Yes|Treatment=C)$$
 
-The corresponding OR's are $OR_{A-B}$ and $OR_{A-C}$. In this setting, we are selecting treatment $A$ as the reference treatment, comparing the remaining treatments with it. Lets calculate those OR's.
+The corresponding OR's are $OR(BM=Yes|A vs B)$ and $OR(BM=Yes|A vs C)$. In this setting, we are selecting treatment $A$ as the reference treatment, comparing the remaining treatments with it. Lets calculate those OR's.
 
+```{r , echo=T}
+table(z1$treatment,z1$BM) %>% oddsratio()
+```
+Here we present a more friendly table:
 ```{r ORex2, echo=FALSE}
 ###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
 ORex2<-kable(oddsratio(table(z1$treatment,z1$BM))$measure,caption="OR's for reference treatment A, with 95% confidence intervals")
 kable_styling(ORex2,"striped", position = "center",full_width = F)
 ```
 
-So it seem that treatment $A$ has fewer cases of behavior modifications compared to the other treatments. It would be nice to have a graph wich allows us to see this more clearly. In fact this graph exists and is called mosaic plot
+So it seem that treatment $A$ has fewer cases of behavior modifications compared to the other treatments. It would be nice to have a graph wich allows us to see this more clearly. In fact this graph exists and is called **mosaic plot**
 <center>
 ```{r rocg1, message = FALSE, warning =F, echo=F, fig.width=4, fig.height=3.5, fig.cap="mosaic plot for BM conditional probabiliteis"}
 ggplot(data = z1) +
@@ -210,7 +278,7 @@ ggplot(data = z1) +
 ```
 </center>
 
-This OR's approach for this $3\times 2$ can be modified, changing the reference treatment and obtaining diferent OR's. As stated in the previous section the order of the rows ans columns maters, so if we swap columns diferent OR's will be obtained, however it can be checked that these OR's for the swaped columns are the multiplicative inverse of the ones presented here.
+This OR's approach for this $3\times 2$ can be modified, changing the reference treatment and obtaining different OR's. As stated in the previous section the order of the rows ans columns maters, so if we swap, columns different OR's will be obtained, however it can be checked that these OR's for the swapped columns are the multiplicative inverse of the ones presented here.
 
 # Logistic regression
 
@@ -264,12 +332,6 @@ ggplot(data = z0) +
 ```
 </center>
 
-Here we present a short look of the data for this study:
-
-```{r , echo=F}
-sample(1:nrow(z0),10) %>% {z0[.,]}
-```
-
 We will fit the following model:
 
 \begin{equation}
@@ -278,7 +340,7 @@ Ln \left(\frac{P(Status=flu|X_{vac}=x)}{1-P(Status=flu|X_{vac}=x))}\right)=\beta
 
 Where $X_{vac}$ is a dummy variable encoding categorical variable $vac$, $X_{vac}= 0$ if $vac=no$ and  $X_{vac}= 1$ if $vac=yes$. Let us explore how the model \@ref(eq:flureg) behaves.
 
-First we will check the behavior of the model when people is not vaccinated, that is $vac=no$ or $X_{vac}= 0$, which is the same. So replacing the paropiate values in model \@ref(eq:flureg)  we got:
+First we will check the behavior of the model when people is not vaccinated, that is $vac=no$ or $X_{vac}= 0$, which is the same. So replacing the appropriate values in model \@ref(eq:flureg)  we got:
 
 \begin{equation}
 Ln \left(\frac{P(Status=flu|X_{vac}=0)}{1-P(Status=flu|X_{vac}=0))}\right)=\beta_0+\beta_1 \times 0= \beta_0 (\#eq:fluregb0)
@@ -289,7 +351,7 @@ Therefore, $\beta_0$ is just the natural logaritm of the odds of present flu whe
 Now let us check the case when people is actually vaccinated, that is $vac=yes$ or $X_{vac}= 1$, which is the same:
 
 $$Ln \left(\frac{P(Status=flu|X_{vac}=1)}{1-P(Status=flu|X_{vac}=1))}\right)=\beta_0+\beta_1 \times 1= \beta_0+\beta_1$$
-Since when already have the value of $\beta_0$ \@ref(eq:fluregb0) the above can be rewritten as
+Since we already have the value of $\beta_0$ \@ref(eq:fluregb0) the above can be rewritten as
 $$Ln \left(\frac{P(Status=flu|X_{vac}=1)}{1-P(Status=flu|X_{vac}=1))}\right)=Ln \left(\frac{P(Status=flu|X_{vac}=0)}{1-P(Status=flu|X_{vac}=0))}\right)+\beta_1 $$
 And now, solving for $\beta_1$ we get
 
@@ -323,7 +385,7 @@ summary(m0)
 
 We confirm that the codification of variable `` `r colnames(z0)[2]` `` is the same as specified in model \@ref(eq:flureg) (can you understand why?).
 
-The first thing is to confirm that we actually are modelling $P(flu)$. We will confirm this prediction the probability for vaccinated and not vaccinated, using function `predict`
+The first thing is to confirm that we actually are modelling $P(flu)$. We will confirm this by predicting the probability of being infected with flu for vaccinated and not vaccinated, using function `predict`
 
 ```{r , echo=T}
 #prediction for vac="no"
@@ -381,7 +443,7 @@ or1$measure["no",]
 The values are not exactly equal but are quite similar. This diference is due to the fact that function `oddsratio` uses a different method to estimate the OR as compared to the procedure used in the logistic regression. 
 
 ## Example 2 revisited
-Now we are going to use the logisti regresion model to analyse data from example 2. Here we present briefly the data, treatment vs behavior modifications:
+Now we are going to use the logistic regression model to analyse data from example 2. Here we present briefly the data, treatment vs behavior modifications:
 
 ```{r , echo=T}
 table(z1[,c("treatment","BM")])%>%addmargins
@@ -395,6 +457,7 @@ ggplot(data = z1) +
 Since we will be interested in modeling $P(BM=yes)$ we now change category `No` to be reference for variable `BM` and fit the model:
 
 ```{r , echo=T}
+z1$BM<-relevel(z1$BM,ref="No")
 m1<-glm(BM~treatment,data = z1,family = binomial)
 summary(m1)
 ```
@@ -466,7 +529,7 @@ as can be seen in `summary(m1)`
 
 ### Exampe 2: OR from logistic regresion vs clasical OR
 
-Or obtained from logisti regresion model \@ref(eq:bmreg) are not the same as thos obtained by means of the function `oddsratio`. The OR's from that functions are these:
+OR's obtained from logistic regression model \@ref(eq:bmreg) are not the same as those obtained by means of the function `oddsratio`. The OR's from that functions are these:
 
 ```{r , echo=T}
 # use param rev to change order of columns
@@ -491,4 +554,23 @@ OR(BM=Yes| treatment=A \; vs \; treatment=C)=exp(-\beta_2)=`r coef(m1)[3] %>% {e
 (\#eq:invorBM)
 \end{equation}
 
-which are quite similar to those obtained trhoug function `oddsratio`
+which are quite similar to those obtained trough function `oddsratio`. For these OR's confidense intervals would be also calculated as follows:
+
+```{r , echo=T}
+confint(m1)[-1,] %>% {exp(-.)}
+```
+you should note that they are inverted, can you understand why is this?
+
+# Conclucions
+
+We have shown how OR's works, in particular the configuration of columns and rows in a contingency table are very important in order to determine the type of OR calculated.
+
+We also have introduced the notation
+
+$$OR(y|A \;vs \; B)$$
+in order to avoid any confusion about the probabilities involved in the calculation of the OR of interest. Here $y$ is the outcome of interest and $A$ and $B$ are the groups where we are interested in compare the precense of outcome $y$.
+
+Once clarified the concepts around the OR we show how to estimate them by means of the logistic regression. Here, again, the reference category concept as well as the reference encoding for categorical variables are of paramount importance to specify the model and to obtain the desired OR's.
+
+In an other document we will discus the concept of "adjusted" OR and how to calculate it and interpret it using the logistic regression model.
+
