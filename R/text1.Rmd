@@ -158,32 +158,32 @@ sim_probs[treatment %in% "A"]<-inv.logit(Abetas[1]+Abetas[2]*cons[treatment %in%
 sim_probs[treatment %in% "B"]<-inv.logit(Bbetas[1]+Bbetas[2]*cons[treatment %in% "B"])
 sim_probs[treatment %in% "C"]<-inv.logit(Cbetas[1]+Cbetas[2]*cons[treatment %in% "C"])
 
-z0<-data.frame(treatment,cons,sim_probs,stringsAsFactors = T)
-z0$BM<-map_dbl(z0$sim_probs,~rbinom(1,1,.))
-z0$BM<-factor(z0$BM,level=0:1,labels = c("No","Yes"))
+z1<-data.frame(treatment,cons,sim_probs,stringsAsFactors = T)
+z1$BM<-map_dbl(z1$sim_probs,~rbinom(1,1,.))
+z1$BM<-factor(z1$BM,level=0:1,labels = c("No","Yes"))
 ```
 
-A researcher has `r N` mice which were asigned randomly to one of `r length(levels(z0$treatment))` treatments: `r levels(z0$treatment)`. The researchers were interested in how the treatment is related to behavior modifications ($BM=Yes$) or not ($BM=No$). Table \@ref(tab:ex2t1) presents the rewsults of this experiment.
+A researcher has `r N` mice which were asigned randomly to one of `r length(levels(z1$treatment))` treatments: `r levels(z1$treatment)`. The researchers were interested in how the treatment is related to behavior modifications ($BM=Yes$) or not ($BM=No$). Table \@ref(tab:ex2t1) presents the rewsults of this experiment.
 
 ```{r ex2t1, echo=FALSE}
-z0$BM<-relevel(z0$BM,ref="Yes")
+z1$BM<-relevel(z1$BM,ref="Yes")
 ###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
-ex2t1<-kable(table(z0[,c("treatment","BM")])%>%addmargins,caption="contingency table of treatment vs behavior modifications")
+ex2t1<-kable(table(z1[,c("treatment","BM")])%>%addmargins,caption="contingency table of treatment vs behavior modifications")
 kable_styling(ex2t1,"striped", position = "center",full_width = F)%>% add_header_above(c("treatment","BM"=2," "))
-# res<-t(table(z0)%>%addmargins)  
+# res<-t(table(z1)%>%addmargins)  
 # knitr::kable(res,caption="Tabla de contingencia: status vs exposition")
 ```
 
 It must be noted that the objective of this experiment is to study the following conditional probabilities:
 $$P(BM=Yes|Treatment=A), \;(BM=Yes|Treatment=B), \;(BM=Yes|Treatment=C)$$
-And to assess wether they differ at all, which is biger, etc. How OR's can help us to characterise the change in conditional distributions of behavior modifications given the treatments asigned? OR's are designed to measure the association between dichotumous variables, however, here one of the variables has `r length(levels(z0$treatment))` categories. The key is to note that in table \@ref(tab:ex2t1) there exist several $2 \times 2$ tables for example
+And to assess wether they differ at all, which is biger, etc. How OR's can help us to characterise the change in conditional distributions of behavior modifications given the treatments asigned? OR's are designed to measure the association between dichotumous variables, however, here one of the variables has `r length(levels(z1$treatment))` categories. The key is to note that in table \@ref(tab:ex2t1) there exist several $2 \times 2$ tables for example
 
 ```{r nested2by2, echo=FALSE}
 ###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
-ex2t1a<-kable(table(z0[,c("treatment","BM")])%>%{.[1:2,]}%>%addmargins,caption="a) rows A and B")
+ex2t1a<-kable(table(z1[,c("treatment","BM")])%>%{.[1:2,]}%>%addmargins,caption="a) rows A and B")
 kable_styling(ex2t1a,"striped", position = "float_left",full_width = F)%>% add_header_above(c("treatment","BM"=2," "))
 
-ex2t1b<-kable(table(z0[,c("treatment","BM")])%>%{.[c(1,3),]}%>%addmargins,caption="b) rows A and C")
+ex2t1b<-kable(table(z1[,c("treatment","BM")])%>%{.[c(1,3),]}%>%addmargins,caption="b) rows A and C")
 kable_styling(ex2t1b,"striped", position = "left",full_width = F)%>% add_header_above(c("treatment","BM"=2," "))
 ```
 
@@ -197,14 +197,14 @@ The corresponding OR's are $OR_{A-B}$ and $OR_{A-C}$. In this setting, we are se
 
 ```{r ORex2, echo=FALSE}
 ###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
-ORex2<-kable(oddsratio(table(z0$treatment,z0$BM))$measure,caption="OR's for reference treatment A, with 95% confidence intervals")
+ORex2<-kable(oddsratio(table(z1$treatment,z1$BM))$measure,caption="OR's for reference treatment A, with 95% confidence intervals")
 kable_styling(ORex2,"striped", position = "center",full_width = F)
 ```
 
 So it seem that treatment $A$ has fewer cases of behavior modifications compared to the other treatments. It would be nice to have a graph wich allows us to see this more clearly. In fact this graph exists and is called mosaic plot
 <center>
 ```{r rocg1, message = FALSE, warning =F, echo=F, fig.width=4, fig.height=3.5, fig.cap="mosaic plot for BM conditional probabiliteis"}
-ggplot(data = z0) +
+ggplot(data = z1) +
   geom_mosaic(aes(x = product(BM,treatment), fill=BM), na.rm=TRUE)+
   labs(x = "treatment",y="")+theme_bw()
 ```
@@ -213,3 +213,171 @@ ggplot(data = z0) +
 This OR's approach for this $3\times 2$ can be modified, changing the reference treatment and obtaining diferent OR's. As stated in the previous section the order of the rows ans columns maters, so if we swap columns diferent OR's will be obtained, however it can be checked that these OR's for the swaped columns are the multiplicative inverse of the ones presented here.
 
 # Logistic regression
+
+Logistic regression was developed as an extension of the linear regression when the outcome of interest is a variable following a binomial distribution. However, most of the cases in health sciences the outcome of interest is distributed as a Bernoulli which is simply a binomial distribution where $n=1$. 
+
+
+
+Let us consider an outcome variable of interest $Y$ which has values of $yes$ and $no$ (like presence of disease, death, and so on). Assume now, that $P(Y=yes)$ is the probability of interest in the study and the aim of the study is to evaluate how this probability changes for different characteristics of the study subjects, like gender, age and other possible "covariates".
+
+This led us to the study of the conditional probability of $P(Y=yes)$ given arbitrary values in the covariates, in general that is:
+
+\begin{equation}
+P(Y=yes|X_1=x_1,X_2=x_2,...,X_p=x_p) (\#eq:condp)
+\end{equation}
+Where $X1,...,X_p$ are random variables (the covariates) and $x_1,...,x_p$ are arbitrary values of these covariates.
+
+In order to study those conditional probabilities \@ref(eq:condp), statisticians have developed the following model:
+
+\begin{equation}
+Ln \left(\frac{P(Y=yes|X_1=x_1,X_2=x_2,...,X_p=x_p)}{1-P(Y=yes|X_1=x_1,X_2=x_2,...,X_p=x_p)}\right)=
+\beta_0+\beta_1x_1+\beta_2x_2+...+\beta_px_p(\#eq:logreg)
+\end{equation}
+
+Model \@ref(eq:logreg) is known as the _**Logistic Regression**_. The cuantity 
+
+\begin{equation}
+\frac{P(Y=yes|X_1=x_1,X_2=x_2,...,X_p=x_p)}{1-P(Y=yes|X_1=x_1,X_2=x_2,...,X_p=x_p)}(\#eq:logodds)
+\end{equation}
+
+is known as the _**odds**_ and is simple the probability of a given event divided by the probability of it not occurring.
+
+Let us explore this model with the data of previous examples
+
+## Example 1 revisited
+
+Here we present briefly the data of example 1, flu vs vaccination:
+```{r conttabl02, echo=FALSE}
+###see http://haozhu233.github.io/kableExtra/awesome_table_in_html.html
+res<-kable(t(table(z0)%>%addmargins),caption="contingency table of flu vs vac")
+kable_styling(res,"striped", position = "center",full_width = F)%>% add_header_above(c("vac","status"=2," "))
+# res<-t(table(z0)%>%addmargins)  
+# knitr::kable(res,caption="Tabla de contingencia: status vs exposition")
+z0$vac<-relevel(z0$vac,ref="no")
+```
+<center>
+```{r z0ggplot, message = FALSE, warning =F, echo=F, fig.width=4, fig.height=3.5, fig.cap="mosaic plot for flu conditional probabiliteis"}
+ggplot(data = z0) +
+  geom_mosaic(aes(x = product(status,vac), fill=status), na.rm=TRUE)+
+  labs(x = "vac",y="")+theme_bw()+scale_fill_manual(values=c("green","red"))
+
+```
+</center>
+
+Here we present a short look of the data for this study:
+
+```{r , echo=F}
+sample(1:nrow(z0),10) %>% {z0[.,]}
+```
+
+We will fit the following model:
+
+\begin{equation}
+Ln \left(\frac{P(Status=flu|X_{vac}=x)}{1-P(Status=flu|X_{vac}=x))}\right)=\beta_0+\beta_1x(\#eq:flureg)
+\end{equation}
+
+Where $X_{vac}$ is a dummy variable encoding categorical variable $vac$, $X_{vac}= 0$ if $vac=no$ and  $X_{vac}= 1$ if $vac=yes$. Let us explore how the model \@ref(eq:flureg) behaves.
+
+First we will check the behavior of the model when people is not vaccinated, that is $vac=no$ or $X_{vac}= 0$, which is the same. So replacing the paropiate values in model \@ref(eq:flureg)  we got:
+
+\begin{equation}
+Ln \left(\frac{P(Status=flu|X_{vac}=0)}{1-P(Status=flu|X_{vac}=0))}\right)=\beta_0+\beta_1 \times 0= \beta_0 (\#eq:fluregb0)
+\end{equation}
+
+Therefore, $\beta_0$ is just the natural logaritm of the odds of present flu when people os not vaccinated.
+
+Now let us check the case when people is actually vaccinated, that is $vac=yes$ or $X_{vac}= 1$, which is the same:
+
+$$Ln \left(\frac{P(Status=flu|X_{vac}=1)}{1-P(Status=flu|X_{vac}=1))}\right)=\beta_0+\beta_1 \times 1= \beta_0+\beta_1$$
+Since when already have the value of $\beta_0$ \@ref(eq:fluregb0) the above can be rewritten as
+$$Ln \left(\frac{P(Status=flu|X_{vac}=1)}{1-P(Status=flu|X_{vac}=1))}\right)=Ln \left(\frac{P(Status=flu|X_{vac}=0)}{1-P(Status=flu|X_{vac}=0))}\right)+\beta_1 $$
+And now, solving for $\beta_1$ we get
+
+\begin{equation}
+\beta_1=Ln \left(\frac{P(Status=flu|X_{vac}=1)}{1-P(Status=flu|X_{vac}=1))}\right)-Ln\left(\frac{P(Status=flu|X_{vac}=0)}{1-P(Status=flu|X_{vac}=0))}\right)= \\
+Ln \left( \frac{\frac{P(Status=flu|X_{vac}=1)}{1-P(Status=flu|X_{vac}=1))}}{\frac{P(Status=flu|X_{vac}=0)}{1-P(Status=flu|X_{vac}=0))}}  \right)
+(\#eq:fluregb1)
+\end{equation}
+
+Therefore, $\beta_1$ is the natural logaritm of $OR(flu|vac=yes \; vs \; vac=no)$.
+
+Now we will show how to fit this model in R
+
+### Fitting model for example 1
+
+First of all, is very important to check the order of the categories of each variable in R. We can do this by simply using function `levels`:
+
+```{r , echo=T}
+levels(z0$status)
+levels(z0$vac)
+```
+
+so we see that the **reference** category for variable  `` `r colnames(z0)[1]` `` is `` `r levels(z0$status)[1]` `` and for variable `` `r colnames(z0)[2]` `` is `` `r levels(z0$vac)[1]` ``.
+
+Now we fit the logistic regression model \@ref(eq:flureg) as follows:
+
+```{r , echo=T}
+m0<-glm(status~vac,data = z0,family = binomial)
+summary(m0)
+```
+
+We confirm that the codification of variable `` `r colnames(z0)[2]` `` is the same as specified in model \@ref(eq:flureg) (can you understand why?).
+
+The first thing is to confirm that we actually are modelling $P(flu)$. We will confirm this prediction the probability for vaccinated and not vaccinated, using function `predict`
+
+```{r , echo=T}
+#prediction for vac="no"
+predict(m0,data.frame(vac="no"),type ="response")
+#prediction for vac="yes"
+predict(m0,data.frame(vac="yes"),type ="response")
+#conditional proportions based on data
+t(table(z0))%>%prop.table(1)
+```
+As we can see, the predictions are the same as the conditional proportions calculated from the data. This confirms that model `m0` is actually especified as equation \@ref(eq:flureg). This is so, because of the reference category structure in `data.frame` `z0`. 
+
+### Fitting model for example 1: working with $P(no\;flu)$
+I will now show a model where we actually are modeling $P(no\;flu)$. This is achieved by just changing the reference category in variable no_flu `status`. For this I will create a copy of `z0` named `z00` and change de reference category of variable `status`. After that I will fit the `glm` model:
+
+```{r , echo=T}
+#copy df
+z00<-z0
+#changing reference category
+z00$status<-relevel(z00$status,ref="flu")
+#fitting the model
+m00<-glm(status~vac,data = z00,family = binomial)
+summary(m00)
+```
+
+let us now check the predicted probabilities as before:
+
+```{r , echo=T}
+#prediction for vac="no"
+predict(m00,data.frame(vac="no"),type ="response")
+#prediction for vac="yes"
+predict(m00,data.frame(vac="yes"),type ="response")
+#conditional proportions based on data
+t(table(z00))%>%prop.table(1)
+```
+
+with this you can see that model `m00` is working indeed with $P(no\;flu)$. This shows the importance of reference category when running a model.
+
+### OR from logistic regresion
+We are back to our model of $P(flu)$. We saw that, in the end, parameter $\beta_1$  in model \@ref(eq:flureg)  is just the natural logarithm of an OR \@ref(eq:fluregb1), namely $OR(flu|vac=yes \; vs \; vac=no)$. In model `m0` the estimation of $\beta_1$ is `` `r coef(m0)[2]` `` that is:
+
+$$Ln \left( OR(flu|vac=yes \; vs \; vac=no) \right)=`r coef(m0)[2]`$$
+In order to get the OR valur we just need to apply the inverse function of the natural logarithm, that is the exponential function (`exp` in R)
+
+```{r , echo=T}
+coef(m0)[2] %>% exp
+```
+We can compare this with the value of the OR computed from the `oddsratio` function, stored previously in object `or1`:
+
+```{r , echo=T}
+#conventional contingency table for OR calculation
+or1$data
+#OR estimation
+or1$measure["no",]
+```
+The values are not exactly equal but are quite similar. This diference is due to the fact that function `oddsratio` uses a different method to estimate the OR as compared to the procedure used in the logistic regression. 
+
+## Example 2 revisited

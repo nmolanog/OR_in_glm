@@ -941,6 +941,273 @@ Figure 2.1: mosaic plot for BM conditional probabiliteis
 </div>
 <div id="logistic-regression" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> Logistic regression</h1>
+<p>Logistic regression was developed as an extension of the linear regression when the outcome of interest is a variable following a binomial distribution. However, most of the cases in health sciences the outcome of interest is distributed as a Bernoulli which is simply a binomial distribution where <span class="math inline">\(n=1\)</span>.</p>
+<p>Let us consider an outcome variable of interest <span class="math inline">\(Y\)</span> which has values of <span class="math inline">\(yes\)</span> and <span class="math inline">\(no\)</span> (like presence of disease, death, and so on). Assume now, that <span class="math inline">\(P(Y=yes)\)</span> is the probability of interest in the study and the aim of the study is to evaluate how this probability changes for different characteristics of the study subjects, like gender, age and other possible “covariates.”</p>
+<p>This led us to the study of the conditional probability of <span class="math inline">\(P(Y=yes)\)</span> given arbitrary values in the covariates, in general that is:</p>
+<p><span class="math display" id="eq:condp">\[\begin{equation}
+P(Y=yes|X_1=x_1,X_2=x_2,...,X_p=x_p) \tag{3.1}
+\end{equation}\]</span>
+Where <span class="math inline">\(X1,...,X_p\)</span> are random variables (the covariates) and <span class="math inline">\(x_1,...,x_p\)</span> are arbitrary values of these covariates.</p>
+<p>In order to study those conditional probabilities <a href="#eq:condp">(3.1)</a>, statisticians have developed the following model:</p>
+<p><span class="math display" id="eq:logreg">\[\begin{equation}
+Ln \left(\frac{P(Y=yes|X_1=x_1,X_2=x_2,...,X_p=x_p)}{1-P(Y=yes|X_1=x_1,X_2=x_2,...,X_p=x_p)}\right)=
+\beta_0+\beta_1x_1+\beta_2x_2+...+\beta_px_p\tag{3.2}
+\end{equation}\]</span></p>
+<p>Model <a href="#eq:logreg">(3.2)</a> is known as the <em><strong>Logistic Regression</strong></em>. The cuantity</p>
+<p><span class="math display" id="eq:logodds">\[\begin{equation}
+\frac{P(Y=yes|X_1=x_1,X_2=x_2,...,X_p=x_p)}{1-P(Y=yes|X_1=x_1,X_2=x_2,...,X_p=x_p)}\tag{3.3}
+\end{equation}\]</span></p>
+<p>is known as the <em><strong>odds</strong></em> and is simple the probability of a given event divided by the probability of it not occurring.</p>
+<p>Let us explore this model with the data of previous examples</p>
+<div id="example-1-revisited" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Example 1 revisited</h2>
+Here we present briefly the data of example 1, flu vs vaccination:
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:conttabl02">Table 3.1: </span>contingency table of flu vs vac
+</caption>
+<thead>
+<tr>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+vac
+</div>
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+status
+</div>
+</th>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
+</th>
+</tr>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+no_flu
+</th>
+<th style="text-align:right;">
+flu
+</th>
+<th style="text-align:right;">
+Sum
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+yes
+</td>
+<td style="text-align:right;">
+129
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+149
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+46
+</td>
+<td style="text-align:right;">
+55
+</td>
+<td style="text-align:right;">
+101
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sum
+</td>
+<td style="text-align:right;">
+175
+</td>
+<td style="text-align:right;">
+75
+</td>
+<td style="text-align:right;">
+250
+</td>
+</tr>
+</tbody>
+</table>
+<center>
+<div class="figure"><span id="fig:z0ggplot"></span>
+<img src="data:image/png;base64,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49TS8DGwBwgADtUzzzyzdevWEML8+fMvuOCC7MJhw4ZdfvnlJ510UllZ2dy5cy+++OJ/+jj33HNPCOHEE0989dVXW7ZsWbl8/Pjx/fr127hx4wsvvDBhwoT6OXzjIIAA4FC98cYbIYTCwsIvf/nLVZd37979hhtu2LRpU/fu3f/pg5SWlqbT6S5dulx77bVV6yeE0KpVq0GDBt1///0bNmyo2clDDQ3faAggADhUnTp1CiGUlZXdd999Y8eOrXrTrbfeeogP0qRJk/fff//v3frxxx//KxP+AzUyfKPhHCAAOFT//u//XlRUFEK45pprBg4cOGnSpJdeeqm0tPRfecxMJvPhhx+++OKLM2fO/NrXvrZw4cIaGra62hi+4bIHCAAOVc+ePefPn//tb397/fr1y5cvX758eQihSZMm55133ogRI/7jP/6jVatWh/hQq1evvvfee5ctW/buu+/u37+/Nqf+TA0O3wjYAwQAh+GCCy5YvXr1nDlzvvGNb2QPKpWWli5evHj8+PEnnXTS0qVLD+VBfvGLX/Tr12/atGlvvvlmKpXq37//yJEjb7755kWLFn3zm9+s58M3DvYAAcDhadKkyWWXXXbZZZeFENatW/fHP/5x7ty5zz777EcffXT55Ze//fbb7dq1+wd3X7JkyY033hhC6Nu37+TJk4cMGdKkSZPKW+fNm1cjQ37yySe1MXyjYQ8QAByq4uLi4uLiqm3Rs2fPb33rW88888yvf/3rEMK2bdv+9Kc//eMHuf/++0MIzZo1W7x48cUXX1y1fkIIFRUVhztVJpM5cOE777xTG8M3GgIIAA7VOeecc+yxx44ZM+bAmyqvrLNz585//CCbNm0KIXTv3r1jx47VbspkMtlTcw5L9gGrKisre+yxx6otrJHhGw0BBACHqn///iGExYsXr1q1qtpNDzzwQPYPZ555ZrWbUqlU1R979OgRQli/fn32soSVSkpKvvvd72av1lPtLgd9nA4dOrRo0SKE8OCDD1bdb5S9cvR7771XI8M3Vs4BAoBDdc011yxYsKCkpOT000/Pfpi8Q4cOH3744Zw5c5599tkQwpAhQ0488cTK9fPz80MIO3funDdvXq9evdq2bdu5c+evfvWrM2fOLCkpGTx48E033dS7d+9PPvlk5cqVd91114YNG4qKij799NN33nln0aJFZ599dvZKiQd9nLy8vPPPP3/hwoWvv/764MGDr7/++m7duq1du/aBBx74/e9/n5eXV/VLVT/H8I2bAAKAQ3XxxRffeOONv/jFL0pLS7PnzVR15plnPv7444lEonJJdqdLJpPJnnR85513fv/73x8+fPjVV1/929/+dvXq1aNGjapcOS8v74Ybbjj99NMvv/zydDp94YUXDh8+PHtO9EEfJ4Rwzz33DBgw4OOPP162bNmyZcuqDnP77bffcMMN/8rwjZtDYABwGG6//fbXX3999OjRp512Wtu2bVu0aHHyySdfeumlCxcufPnll1u3bl115aFDh06aNKlbt25NmjQ5+uij27dvn11+3333zZs374ILLujatWuTJk2OPfbYq6+++o033rjjjjtGjBgxbty4Nm3aNGvW7JhjjvnHj9O1a9e333574sSJ/fr1y17kMITQunXrBx544KAfpz+s4Ru3xEFPHafODB48eNSoUdUuSX5ItmwJZ50V4viwYgghlUpl36vZ/cBR2L07PP546NcvhLAkLLkuXNc8NM/1TI1WjG+wOlcWyn4UfjQqjPrnq/6t9evXjxw5csaMGQMGDKiNwRqTTZs2bd++vXfv3gUFBbmepb7zVx0AGokuXbp06dIl11M0DA6BAQDREUAAQHQEEAAQHQEEAERHAAEA0RFAAEB0BBAAEB0BBABERwABANERQABAdAQQABAdAQQAREcAAQDREUAAQHQEEAAQHQEEAEQnP9cDAEDDcHo4PdcjfGZ5WJ7rERo8e4AAgOgIIAAgOgIIAIiOAAIAoiOAAIDoCCAAIDoCCACIjgACAKIjgACA6AggACA6AggAiI4AAgCiI4AAgOgIIAAgOgIIAKgVH3300YgRI9q2bdu2bduysrIQQs+ePROJxPbt23M9mgACAGrH2LFj586dW1BQ0L9//0Qiketx/kZ+rgcAABqnF198MZFIrFq1qkOHDrmepTp7gAAgLvv3789kMnXwRGVlZclksh7WTxBAANDoPfTQQ4lE4q677nrllVf69evXvHnzwsLCE0444frrr9+5c2e1lVeuXHnllVf27du3ZcuWX/jCF77zne9s2bLlcJ9x7NixiUSipKSkoqIikUgkEonS0tIDV5s0aVIikbjjjjuqLb/yyisTicTChQsP93kPnUNgABCF1atX/+QnP9m/f/8pp5ySSCRWrlw5ZcqU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AKIjgACA6AggACA6AggAiI4AAgCiI4AAgOgIIAAgOgIIAIiOAAIAoiOAAIDoCCAAIDoCCACIjgACAKIjgACA6AggACA6AggAiI4AAgCiI4AAgOgIIAAgOgIIAIiOAAIAoiOAAIDoCCAAIDoCCACIjgACAKIjgACA6AggACA6AggAiI4AAgCiI4AAgOgIIAAgOgIIAIiOAAIAoiOAAIDo5Od6gProk08+mTFjxltvvRVCmDVrVn5+/rhx4zZv3vzQQw+1bNky19MBAP8qe4AOYtq0aS+//HIymTz++OMTiUSuxwEAapg9QAexZs2aRCIxbdq01q1b53oWAKDmNaQ9QGVlZZlMpg6eqKKiIi8vT/0AQGNVr/cAvfDCC1OnTh07dmyvXr3uvvvujRs3JpPJTp06DRw4cOTIkUVFRVVX3rhx49y5czds2LB169ZjjjmmR48eI0eOPOKIIw7rGadNm/bcc89l/zxs2LAQwpw5cwoKCqqt9thjjz344INjxowZMWJE1eVTp0594YUXbr755tNPP/2wtxYAqCv1OoCy3n///dmzZ5eWlh577LGJRGLjxo3z589ft27dpEmT8vI+24P1/PPP33PPPWVlZclksn379uvWrXv33XdfeumlG2+8sW/fvof+XL179w4hLF68OJPJDBkyJIRQ+RQAQKPRAAJo0aJFXbt2vemmmzp37hxCWLVq1U9/+tPVq1evXbu2T58+IYStW7fefffdqVRq1KhRI0aMKCws/PTTT6dPn75s2bI777zz3nvvzc8/1M0cPHjw4MGDX3jhhVQqdd1119XiVgEAudMAAiiRSEycODFbPyGEvn37nnnmmS+99NIHH3yQDaBHHnmkoqJiyJAho0aNyq5TVFR0/fXXb9q06b333nvuuee++tWv5mz6/98HH3wwe/bsA5en0+mysrK9e/ce7gN+mvg00zyTzqRrYroGoPL0r3Q6mk1OZPbt37c3vTeEsD+5P90knQ6xbHvdi/ANVvcyIVNSVrK34rB/3e3bty94aahpDSCAunfv3r1796pLOnbsGEJIpVLZH1euXBlCuOSSS6quk0gkhg4d+qtf/eqtt96qDwG0bdu2uXPnHri8RYsWFRUVJSUlh/uApXmlmaYRBVCleH4JphPpsrKykoqSEEJZQVmmMMaXu+7F8ware+mQLi8vLyk9/F93paXBS0NN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Hj16jBw58ogjjsjV8NQ3S5YsufPOOwcOHPjTn/606vKdO3d+4xvfyM/PnzVrVvPmzUMIu3bteuyxx955553333+/TZs2vXv3vvTSS7t161b1Xrt27Zo3b96KFSs2b97crFmzo446aujQoWeddVYikajTrQJqjgCifnn//fdnz55dWlp67LHHJhKJjRs3zp8/f926dZMmTcrL+2yH5fPPP3/PPfeUlZUlk8n27duvW7fu3Xfffemll2688ca+ffvmdn7qiTPOOCOZTL7xxhslJSVNmzatXP7SSy+l0+mBAwdm62fNmjV33HHHjh07kslkhw4dtm3btmTJkj/96U8TJkw477zzsnfZvn37D37wgx07dhQWFnbo0GHv3r2rV69evXr1VVdd9bWvfS03mwf8ywQQ9cuiRYu6du160003de7cOYSwatWqn/70p6tXr167dm2fPn1CCFu3br377rtTqdSoUaNGjBhRWFj46aefTp8+fdmyZXfeeee9996bn+9dTWjRosUpp5yyYsWK119//ZxzzqlcvmzZshDC+eefH0IoKyv75S9/uWPHjhEjRowaNaqwsLCiomLOnDkPP/zwnXfeefzxxx911FEhhNmzZ+/YsePcc8+97rrrstmU3b300EMPDRs2rLCwMEebCPxLnANE/ZJIJCZOnJitnxBC3759zzzzzBDCBx98kF3yyCOPVFRUXHDBBdl/sUIIRUVF119//XHHHbd169bnnnsuV5NT35x99tkhhJdffrlyybZt29auXVtUVDRgwIAQwpNPPrl9+/ZBgwaNGTMm+17Kz88fOXLkkCFDysvL582bl73XO++8E0K47LLLsvUTQhg8ePC5557bu3fvbdu21fFGATVFAFG/dO/evXv37lWXdOzYMYSQSqWyP65cuTKEcMkll1RdJ5FIDB06NITw1ltv1dGg1HtnnnlmIpFYvnx5RUVFdsmLL76YyWTOOeecgoKCEMLy5ctDCF/96ler3XHw4MEhhFWrVmV/zJ5/tnTp0so3YQjhhhtumDRpUnYXEdAQOVhA/XLgvyiVp/6EEMrLy7dt25ZMJrt06VJttexZq1u2bKntCWkoWrdu3bt379WrV69cubJ///7hb49/hRA++uijEMJzzz23dOnSqnfcv39/COGvf/1r9sdLL730jjvuWLBgwYsvvti/f/8+ffqcfPLJ2S4HGi4BRP3SrFmzf3Drjh07MplMq1atqlZRVvYjYA5JUNXZZ5+9evXql19+uX///lu2bFm3bl27du2yZ8pXVFTs2rUrhLB48eKD3reioiKVSiWTyXPOOWfy5MmPPvroqlWrnn/++eeffz6EcPzxx48ZM+bUU0+ty80BapAAoiE54ogjEonE7t270+l0tQbK/mPWpk2bHI1GfXTWWWfdd999//M//3Pttddmd/988YtfzH52PT8/v2XLlnv37p0zZ84/PXG+T58+t9566969e1euXLl69erly5evX7/+5ptvvvXWW/v161cXWwLUNOcA0ZAUFBS0a9culUpt2rSp2k3FxcXhYEfQiFn79u179uy5c+fOt99+u9rxrxBC586dM5nMhx9+WO1en3766apVqzZu3BhCqKio2LJly9atW0MILVq0OPvss8eOHXvvvfdmPyTvpHtouAQQDcwpp5wSQnjqqaeqLV+wYEEIwXWAqCb7WbDHH39848aNXbp0qXqKffa9NH/+/Gp3efjhh3/84x9nPz726aefXnPNNePHjy8rK6tcIZFInH766SGEytOrgQZHANHAjBo1Kj8//w9/+MPjjz+e/edn3759U6ZMWb9+/ZFHHnnhhRfmekDql2wAZT/wVXX3TwhhxIgRLVu2fP7553/zm9/s3bs3hJBOpxcuXPj00083adIk+1mw1q1bd+rUqby8/J577tm3b1/2jps3b547d24IIXttKqAhcg4QDUzHjh3Hjx8/Y8aM2bNnP/roox06dNiyZUs6nW7Tps2ECROyH2+GSp06dTruuOPee++9cEAAFRUVTZgwYcqUKU8//fTChQuPOuqoXbt27d27Ny8v7//9v/9X+Tmva6+99mc/+9nzzz//wgsvdOzYMZVKbd26NZPJnHzyyf/2b/+Wg00CaoIAouEZMmRIjx495s2bl/0usO7du/fq1euKK65wBjQH9YUvfOG999478cQTO3XqVO2m008//a677nrsscf+8pe/fPjhh+3atRswYMDll1/etWvXynVOPfXUqVOnPvHEExs2bNi2bVuLFi169+795S9/+Utf+lIymazbTQFqTMIXbgON25QpU/74xz+OGzfODhugknOAgMZs3759L7/8cjKZPPfcc3M9C1CPCCCgcUqn0xUVFbNmzSorKxswYEDr1q1zPRFQjzgHCGicbrnlltWrV5eXlyeTycsvvzzX4wD1iz1AQON09NFHJ5PJbt26/fjHP+7Vq1euxwHqFydBAwDRsQcIAIiOAAIAoiOAAIDoCCAAIDoCCACIjgACAKIjgACA6AggACA6AggAiI4AAgCiI4AAgOgIIAAgOgIIGpuJEycmEolEIvH6668fdIVLL700kUgUFBR8/PHHlQuXLFny7W9/e9CgQZ06dWrZsmXv3r2HDh365JNPptPpgz7IypUrr7nmmuOPP75Zs2ZHHnnk+eefP23atLKyslrZJICa5tvgobF59dVXv/CFL4QQfvKTn9x2223Vbt2zZ8+RRx5ZUlIybNiwJ598MoRQXl4+ZsyYRx555KCPdtFFFy1YsCCZTFZdePvtt990002pVKrayieccMKiRYu6detWYxsDUDsEEDRCxx133MaNG/v06bNq1apqNz388MOjR48OIcyZM+eyyy4LIdxxxx0//OEPQwi9evUaO3Zsjx49MpnMu++++9///d/vvvtuCGHq1KkTJkyofIQHHnjgG9/4RgihU6dOV1111cCBA3ft2jVnzpxnn302hHDCCSesWrUqPz+/jjYV4PPJAI3ODTfckP0L/u6771a7afjw4SGEtm3blpaWZpdkd9iceOKJu3fvrrrmrl27jj322BDCsGHDKhfu37+/S5cuIYSTTjqpuLi46vo/+tGPsk/6wAMP1M5mAdQY5wBBI3T55Zdn/zBv3ryqy/fs2fP73/8+hHDFFVcUFhaGEEpLS9PpdJcuXa699tqWLVtWXblVq1aDBg0KIWzYsKFy4fTp0zdt2hRC+PWvf33MMcdUXf8///M/jzjiiBDCkiVLamGbAGqS3dTQCA0YMOD4449fv379/PnzK/cGhRAWLFhQUlISQrjqqquyS5o0afL+++//vcepepZ01h/+8IcQQp8+fb785S9Xuyk/P/+ee+7ZuHHj0UcfXSNbAVB7BBA0TpdffvnkyZNfeeWVzZs3d+7cObvwscceCyH06tUre5b0gTKZzEcfffTee++tXbt20aJFCxcurLbCunXrQginnXbaQe8+cuTIGtsAgNokgKBxGjly5OTJkzOZzFNPPTVu3LgQwp49exYtWhRCGDNmTLWVV69efe+99y5btuzdd9/dv3//33vMioqK4uLiEELXrl1rc3aAWuccIGic+vXrd8IJJ4QqpwE99dRTJSUliUTi61//etU1f/GLX/Tr12/atGlvvvlmKpXq37//yJEjb7755kWLFn3zm9+sumZZWVlFRUUIoUmTJnW1HQC1QgBBo5U9FXrJkiW7du0KITz++OMhhC996UtVT15esmTJjTfemEql+vbtu2DBgt27d7/++uuPPvroz3/+86985SvZE6UrNW/e/KijjgohZPcDATRcAggarWwAlZeXP/PMM5Wf/6p2/Ov+++8PITRr1mzx4sUXX3xxtV072f09VfXq1SuEcODlhbImTZo0cODAiy++uMa2AaB2CCBotPr27du7d+8Qwrx585566qnS0tKioqLsxQ8rZT/T3r17944dO1a7eyaTWb58ebWFZ511Vgjhtdde+/Of/1ztpnQ6PXPmzOXLlzdv3rxmNwSgxgkgaMyyO4GeffbZWbNmhRBGjBjRokWLqiv06NEjhLB+/fqtW7dWXV5SUvLd7373jTfeCCFU/cqL66+/vk2bNiGE73znO5s3b656l0mTJmUPjX3lK1+ppc0BqCm+CgMas7fffvukk06q/HHx4sXVrt8zf/78Sy+9NITQp0+fm266qXfv3p988snKlSvvuuuuDRs2FBUVffrpp3l5ec8888zZZ5+dvVLi1KlTJ06cGELo3Lnz1VdfPWDAgL17986bN2/u3LkhhHPOOeePf/xjte8OA6hvBBA0cqeccspbb70VQujSpUtxcXFeXvX9vt/61rd++9vfVluYl5d3/fXXn3766ZUXlR4+fHjlB8ruvvvuiRMnlpaWVrvXqaeeOm/evOwXaADUZ8lbbrkl1zMAteiTTz7JfjfFd77znQsuuODAFYYNG3bqqadu3769vLy8tLS0a9euI0aMuP/++0ePHn3SSSf99a9/Xb9+fSKRGDx48EUXXZS9yxlnnDF06NC9e/fu3LmzpKSka9euZ5555oQJE37zm9+0bdu2TjcP4HOxBwgAiI6ToAGA6AggACA6AggAiI4AAgCiI4AAgOgIIAAgOgIIAIiOAAIAoiOAAIDoCCAAIDoCCACIjgACAKIjgACA6AggACA6AggAiI4AAgCiI4AAgOgIIAAgOgIIAIiOAAIAoiOAAIDo/H+2Xry/ETiC2AAAAABJRU5ErkJggg==" alt="mosaic plot for flu conditional probabiliteis" width="384" />
+<p class="caption">
+Figure 3.1: mosaic plot for flu conditional probabiliteis
+</p>
+</div>
+</center>
+<p>Here we present a short look of the data for this study:</p>
+<pre><code>##     status vac
+## 140 no_flu  no
+## 71     flu  no
+## 138 no_flu yes
+## 88  no_flu yes
+## 172 no_flu yes
+## 122 no_flu yes
+## 174 no_flu yes
+## 102 no_flu yes
+## 215 no_flu yes
+## 210 no_flu yes</code></pre>
+<p>We will fit the following model:</p>
+<p><span class="math display" id="eq:flureg">\[\begin{equation}
+Ln \left(\frac{P(Status=flu|X_{vac}=x)}{1-P(Status=flu|X_{vac}=x))}\right)=\beta_0+\beta_1x\tag{3.4}
+\end{equation}\]</span></p>
+<p>Where <span class="math inline">\(X_{vac}\)</span> is a dummy variable encoding categorical variable <span class="math inline">\(vac\)</span>, <span class="math inline">\(X_{vac}= 0\)</span> if <span class="math inline">\(vac=no\)</span> and <span class="math inline">\(X_{vac}= 1\)</span> if <span class="math inline">\(vac=yes\)</span>. Let us explore how the model <a href="#eq:flureg">(3.4)</a> behaves.</p>
+<p>First we will check the behavior of the model when people is not vaccinated, that is <span class="math inline">\(vac=no\)</span> or <span class="math inline">\(X_{vac}= 0\)</span>, which is the same. So replacing the paropiate values in model <a href="#eq:flureg">(3.4)</a> we got:</p>
+<p><span class="math display" id="eq:fluregb0">\[\begin{equation}
+Ln \left(\frac{P(Status=flu|X_{vac}=0)}{1-P(Status=flu|X_{vac}=0))}\right)=\beta_0+\beta_1 \times 0= \beta_0 \tag{3.5}
+\end{equation}\]</span></p>
+<p>Therefore, <span class="math inline">\(\beta_0\)</span> is just the natural logaritm of the odds of present flu when people os not vaccinated.</p>
+<p>Now let us check the case when people is actually vaccinated, that is <span class="math inline">\(vac=yes\)</span> or <span class="math inline">\(X_{vac}= 1\)</span>, which is the same:</p>
+<p><span class="math display">\[Ln \left(\frac{P(Status=flu|X_{vac}=1)}{1-P(Status=flu|X_{vac}=1))}\right)=\beta_0+\beta_1 \times 1= \beta_0+\beta_1\]</span>
+Since when already have the value of <span class="math inline">\(\beta_0\)</span> <a href="#eq:fluregb0">(3.5)</a> the above can be rewritten as
+<span class="math display">\[Ln \left(\frac{P(Status=flu|X_{vac}=1)}{1-P(Status=flu|X_{vac}=1))}\right)=Ln \left(\frac{P(Status=flu|X_{vac}=0)}{1-P(Status=flu|X_{vac}=0))}\right)+\beta_1 \]</span>
+And now, solving for <span class="math inline">\(\beta_1\)</span> we get</p>
+<p><span class="math display" id="eq:fluregb1">\[\begin{equation}
+\beta_1=Ln \left(\frac{P(Status=flu|X_{vac}=1)}{1-P(Status=flu|X_{vac}=1))}\right)-Ln\left(\frac{P(Status=flu|X_{vac}=0)}{1-P(Status=flu|X_{vac}=0))}\right)= \\
+Ln \left( \frac{\frac{P(Status=flu|X_{vac}=1)}{1-P(Status=flu|X_{vac}=1))}}{\frac{P(Status=flu|X_{vac}=0)}{1-P(Status=flu|X_{vac}=0))}}  \right)
+\tag{3.6}
+\end{equation}\]</span></p>
+<p>Therefore, <span class="math inline">\(\beta_1\)</span> is the natural logaritm of <span class="math inline">\(OR(flu|vac=yes \; vs \; vac=no)\)</span>.</p>
+<p>Now we will show how to fit this model in R</p>
+<div id="fitting-model-for-example-1" class="section level3" number="3.1.1">
+<h3><span class="header-section-number">3.1.1</span> Fitting model for example 1</h3>
+<p>First of all, is very important to check the order of the categories of each variable in R. We can do this by simply using function <code>levels</code>:</p>
+<pre class="r"><code>levels(z0$status)</code></pre>
+<pre><code>## [1] &quot;no_flu&quot; &quot;flu&quot;</code></pre>
+<pre class="r"><code>levels(z0$vac)</code></pre>
+<pre><code>## [1] &quot;no&quot;  &quot;yes&quot;</code></pre>
+<p>so we see that the <strong>reference</strong> category for variable <code>status</code> is <code>no_flu</code> and for variable <code>vac</code> is <code>no</code>.</p>
+<p>Now we fit the logistic regression model <a href="#eq:flureg">(3.4)</a> as follows:</p>
+<pre class="r"><code>m0&lt;-glm(status~vac,data = z0,family = binomial)
+summary(m0)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = status ~ vac, family = binomial, data = z0)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.2542  -0.5369  -0.5369   1.1025   2.0041  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)   0.1787     0.1998   0.894    0.371    
+## vacyes       -2.0428     0.3125  -6.536 6.31e-11 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 305.43  on 249  degrees of freedom
+## Residual deviance: 256.73  on 248  degrees of freedom
+## AIC: 260.73
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>We confirm that the codification of variable <code>vac</code> is the same as specified in model <a href="#eq:flureg">(3.4)</a> (can you understand why?).</p>
+<p>The first thing is to confirm that we actually are modelling <span class="math inline">\(P(flu)\)</span>. We will confirm this prediction the probability for vaccinated and not vaccinated, using function <code>predict</code></p>
+<pre class="r"><code>#prediction for vac=&quot;no&quot;
+predict(m0,data.frame(vac=&quot;no&quot;),type =&quot;response&quot;)</code></pre>
+<pre><code>##         1 
+## 0.5445545</code></pre>
+<pre class="r"><code>#prediction for vac=&quot;yes&quot;
+predict(m0,data.frame(vac=&quot;yes&quot;),type =&quot;response&quot;)</code></pre>
+<pre><code>##         1 
+## 0.1342282</code></pre>
+<pre class="r"><code>#conditional proportions based on data
+t(table(z0))%&gt;%prop.table(1)</code></pre>
+<pre><code>##      status
+## vac      no_flu       flu
+##   no  0.4554455 0.5445545
+##   yes 0.8657718 0.1342282</code></pre>
+<p>As we can see, the predictions are the same as the conditional proportions calculated from the data. This confirms that model <code>m0</code> is actually especified as equation <a href="#eq:flureg">(3.4)</a>. This is so, because of the reference category structure in <code>data.frame</code> <code>z0</code>.</p>
+</div>
+<div id="fitting-model-for-example-1-working-with-pnoflu" class="section level3" number="3.1.2">
+<h3><span class="header-section-number">3.1.2</span> Fitting model for example 1: working with <span class="math inline">\(P(no\;flu)\)</span></h3>
+<p>I will now show a model where we actually are modeling <span class="math inline">\(P(no\;flu)\)</span>. This is achieved by just changing the reference category in variable no_flu <code>status</code>. For this I will create a copy of <code>z0</code> named <code>z00</code> and change de reference category of variable <code>status</code>. After that I will fit the <code>glm</code> model:</p>
+<pre class="r"><code>#copy df
+z00&lt;-z0
+#changing reference category
+z00$status&lt;-relevel(z00$status,ref=&quot;flu&quot;)
+#fitting the model
+m00&lt;-glm(status~vac,data = z00,family = binomial)
+summary(m00)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = status ~ vac, family = binomial, data = z00)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.0041  -1.1025   0.5369   0.5369   1.2542  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  -0.1787     0.1998  -0.894    0.371    
+## vacyes        2.0428     0.3125   6.536 6.31e-11 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 305.43  on 249  degrees of freedom
+## Residual deviance: 256.73  on 248  degrees of freedom
+## AIC: 260.73
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>let us now check the predicted probabilities as before:</p>
+<pre class="r"><code>#prediction for vac=&quot;no&quot;
+predict(m00,data.frame(vac=&quot;no&quot;),type =&quot;response&quot;)</code></pre>
+<pre><code>##         1 
+## 0.4554455</code></pre>
+<pre class="r"><code>#prediction for vac=&quot;yes&quot;
+predict(m00,data.frame(vac=&quot;yes&quot;),type =&quot;response&quot;)</code></pre>
+<pre><code>##         1 
+## 0.8657718</code></pre>
+<pre class="r"><code>#conditional proportions based on data
+t(table(z00))%&gt;%prop.table(1)</code></pre>
+<pre><code>##      status
+## vac         flu    no_flu
+##   no  0.5445545 0.4554455
+##   yes 0.1342282 0.8657718</code></pre>
+<p>with this you can see that model <code>m00</code> is working indeed with <span class="math inline">\(P(no\;flu)\)</span>. This shows the importance of reference category when running a model.</p>
+</div>
+<div id="or-from-logistic-regresion" class="section level3" number="3.1.3">
+<h3><span class="header-section-number">3.1.3</span> OR from logistic regresion</h3>
+<p>We are back to our model of <span class="math inline">\(P(flu)\)</span>. We saw that, in the end, parameter <span class="math inline">\(\beta_1\)</span> in model <a href="#eq:flureg">(3.4)</a> is just the natural logarithm of an OR <a href="#eq:fluregb1">(3.6)</a>, namely <span class="math inline">\(OR(flu|vac=yes \; vs \; vac=no)\)</span>. In model <code>m0</code> the estimation of <span class="math inline">\(\beta_1\)</span> is <code>-2.0427719</code> that is:</p>
+<p><span class="math display">\[Ln \left( OR(flu|vac=yes \; vs \; vac=no) \right)=-2.0427719\]</span>
+In order to get the OR valur we just need to apply the inverse function of the natural logarithm, that is the exponential function (<code>exp</code> in R)</p>
+<pre class="r"><code>coef(m0)[2] %&gt;% exp</code></pre>
+<pre><code>##    vacyes 
+## 0.1296688</code></pre>
+<p>We can compare this with the value of the OR computed from the <code>oddsratio</code> function, stored previously in object <code>or1</code>:</p>
+<pre class="r"><code>#conventional contingency table for OR calculation
+or1$data</code></pre>
+<pre><code>##        status
+## vac     flu no_flu Total
+##   yes    20    129   149
+##   no     55     46   101
+##   Total  75    175   250</code></pre>
+<pre class="r"><code>#OR estimation
+or1$measure[&quot;no&quot;,]</code></pre>
+<pre><code>##   estimate      lower      upper 
+## 0.13150201 0.06972638 0.23949797</code></pre>
+<p>The values are not exactly equal but are quite similar. This diference is due to the fact that function <code>oddsratio</code> uses a different method to estimate the OR as compared to the procedure used in the logistic regression.</p>
+</div>
+</div>
+<div id="example-2-revisited" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Example 2 revisited</h2>
+</div>
 </div>
 
 

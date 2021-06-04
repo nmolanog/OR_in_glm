@@ -102,7 +102,7 @@ t(table(z0))%>%prop.table(1)
 
 ggplot(data = z0) +
   geom_mosaic(aes(x = product(status,vac), fill=status), na.rm=TRUE)+
-  labs(x = "treatment",y="")+theme_bw()
+  labs(x = "treatment",y="")+theme_bw()+scale_fill_manual(values=c("green","red"))
 
 #case 2
 z1$BM<-relevel(z1$BM,ref="No")
